@@ -4,6 +4,7 @@ using MolServiceContracts.StorageContracts;
 using MolServiceDatabaseImplement.Implements;
 using MolServiceDatabaseImplement;
 using MolServiceBusinessLogic.Implements;
+using MolServiceBusinessLogic.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,9 @@ builder.Services.AddScoped<IMaterialTechnicalValueLogic, MaterialTechnicalValueL
 builder.Services.AddScoped<IMaterialTechnicalValueRecordLogic, MaterialTechnicalValueRecordLogic>();
 builder.Services.AddScoped<ISoftwareLogic, SoftwareLogic>();
 builder.Services.AddScoped<ISoftwareRecordLogic, SoftwareRecordLogic>();
+
+builder.Services.AddHttpClient<OneCApiService>();
+builder.Services.AddTransient<IOneCImportLogic, OneCImportLogic>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

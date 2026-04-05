@@ -46,6 +46,21 @@ namespace MolServiceDatabaseImplement.Implements
                 query = query.Where(x => x.FullName.Contains(model.FullName));
             }
 
+            if (!string.IsNullOrWhiteSpace(model.Position))
+            {
+                query = query.Where(x => x.Position.Contains(model.Position));
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.Phone))
+            {
+                query = query.Where(x => x.Phone.Contains(model.Phone));
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.Email))
+            {
+                query = query.Where(x => x.Email.Contains(model.Email));
+            }
+
             return query
                 .Select(x => CreateModel(x))
                 .ToList();
@@ -59,7 +74,8 @@ namespace MolServiceDatabaseImplement.Implements
             }
 
             var entity = _context.MaterialResponsiblePersons.FirstOrDefault(x =>
-                model.Id.HasValue && x.Id == model.Id.Value);
+                (model.Id.HasValue && x.Id == model.Id.Value) ||
+                (!string.IsNullOrWhiteSpace(model.FullName) && x.FullName == model.FullName));
 
             return entity != null ? CreateModel(entity) : null;
         }
