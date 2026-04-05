@@ -83,7 +83,8 @@ namespace MolServiceDatabaseImplement.Implements
                 Number = model.Number,
                 Type = model.Type,
                 Capacity = model.Capacity,
-                NotUseInSchedule = model.NotUseInSchedule
+                NotUseInSchedule = model.NotUseInSchedule,
+                HasProjector = model.HasProjector
             };
 
             _context.Classrooms.Add(entity);
@@ -105,6 +106,7 @@ namespace MolServiceDatabaseImplement.Implements
             entity.Type = model.Type;
             entity.Capacity = model.Capacity;
             entity.NotUseInSchedule = model.NotUseInSchedule;
+            entity.HasProjector = model.HasProjector;
 
             _context.SaveChanges();
 
@@ -135,7 +137,8 @@ namespace MolServiceDatabaseImplement.Implements
                 Number = entity.Number,
                 Type = entity.Type,
                 Capacity = entity.Capacity,
-                NotUseInSchedule = entity.NotUseInSchedule
+                NotUseInSchedule = entity.NotUseInSchedule,
+                HasProjector = entity.HasProjector
             };
         }
     }

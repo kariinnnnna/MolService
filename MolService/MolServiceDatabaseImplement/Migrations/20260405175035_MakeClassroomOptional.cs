@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MolServiceDatabaseImplement.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class MakeClassroomOptional : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -22,7 +22,8 @@ namespace MolServiceDatabaseImplement.Migrations
                     Number = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Type = table.Column<int>(type: "integer", nullable: false),
                     Capacity = table.Column<int>(type: "integer", nullable: false),
-                    NotUseInSchedule = table.Column<bool>(type: "boolean", nullable: false)
+                    NotUseInSchedule = table.Column<bool>(type: "boolean", nullable: false),
+                    HasProjector = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,7 +38,6 @@ namespace MolServiceDatabaseImplement.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FullName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Position = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    Department = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     Phone = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: false),
                     Email = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false)
                 },
@@ -83,14 +83,12 @@ namespace MolServiceDatabaseImplement.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     InventoryNumber = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    ClassroomId = table.Column<int>(type: "integer", nullable: false),
+                    ClassroomId = table.Column<int>(type: "integer", nullable: true),
                     FullName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     Location = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Cost = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    MaterialResponsiblePersonId = table.Column<int>(type: "integer", nullable: false),
-                    ClassroomId1 = table.Column<int>(type: "integer", nullable: true),
-                    MaterialResponsiblePersonId1 = table.Column<int>(type: "integer", nullable: true)
+                    MaterialResponsiblePersonId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -102,21 +100,11 @@ namespace MolServiceDatabaseImplement.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_material_technical_values_classrooms_ClassroomId1",
-                        column: x => x.ClassroomId1,
-                        principalTable: "classrooms",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_material_technical_values_material_responsible_persons_Mate~",
                         column: x => x.MaterialResponsiblePersonId,
                         principalTable: "material_responsible_persons",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_material_technical_values_material_responsible_persons_Mat~1",
-                        column: x => x.MaterialResponsiblePersonId1,
-                        principalTable: "material_responsible_persons",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -127,8 +115,7 @@ namespace MolServiceDatabaseImplement.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     MoveDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Reason = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    MaterialTechnicalValueId = table.Column<int>(type: "integer", nullable: false),
-                    MaterialTechnicalValueId1 = table.Column<int>(type: "integer", nullable: true)
+                    MaterialTechnicalValueId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -139,11 +126,6 @@ namespace MolServiceDatabaseImplement.Migrations
                         principalTable: "material_technical_values",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_equipment_movement_histories_material_technical_values_Mat~1",
-                        column: x => x.MaterialTechnicalValueId1,
-                        principalTable: "material_technical_values",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -156,9 +138,7 @@ namespace MolServiceDatabaseImplement.Migrations
                     MaterialTechnicalValueId = table.Column<int>(type: "integer", nullable: false),
                     FieldName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     FieldValue = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    Order = table.Column<int>(type: "integer", nullable: false),
-                    MaterialTechnicalValueGroupId1 = table.Column<int>(type: "integer", nullable: true),
-                    MaterialTechnicalValueId1 = table.Column<int>(type: "integer", nullable: true)
+                    Order = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -170,21 +150,11 @@ namespace MolServiceDatabaseImplement.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_material_technical_value_records_material_technical_value_~1",
-                        column: x => x.MaterialTechnicalValueGroupId1,
-                        principalTable: "material_technical_value_groups",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_material_technical_value_records_material_technical_values_~",
                         column: x => x.MaterialTechnicalValueId,
                         principalTable: "material_technical_values",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_material_technical_value_records_material_technical_values~1",
-                        column: x => x.MaterialTechnicalValueId1,
-                        principalTable: "material_technical_values",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -196,9 +166,7 @@ namespace MolServiceDatabaseImplement.Migrations
                     MaterialTechnicalValueId = table.Column<int>(type: "integer", nullable: false),
                     SoftwareId = table.Column<int>(type: "integer", nullable: false),
                     SetupDescription = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
-                    ClaimNumber = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
-                    MaterialTechnicalValueId1 = table.Column<int>(type: "integer", nullable: true),
-                    SoftwareId1 = table.Column<int>(type: "integer", nullable: true)
+                    ClaimNumber = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -210,21 +178,11 @@ namespace MolServiceDatabaseImplement.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_software_records_material_technical_values_MaterialTechnic~1",
-                        column: x => x.MaterialTechnicalValueId1,
-                        principalTable: "material_technical_values",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_software_records_softwares_SoftwareId",
                         column: x => x.SoftwareId,
                         principalTable: "softwares",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_software_records_softwares_SoftwareId1",
-                        column: x => x.SoftwareId1,
-                        principalTable: "softwares",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -244,16 +202,6 @@ namespace MolServiceDatabaseImplement.Migrations
                 column: "MaterialTechnicalValueId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_equipment_movement_histories_MaterialTechnicalValueId1",
-                table: "equipment_movement_histories",
-                column: "MaterialTechnicalValueId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_material_technical_value_records_MaterialTechnicalValueGro~1",
-                table: "material_technical_value_records",
-                column: "MaterialTechnicalValueGroupId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_material_technical_value_records_MaterialTechnicalValueGrou~",
                 table: "material_technical_value_records",
                 column: "MaterialTechnicalValueGroupId");
@@ -264,19 +212,9 @@ namespace MolServiceDatabaseImplement.Migrations
                 column: "MaterialTechnicalValueId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_material_technical_value_records_MaterialTechnicalValueId1",
-                table: "material_technical_value_records",
-                column: "MaterialTechnicalValueId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_material_technical_values_ClassroomId",
                 table: "material_technical_values",
                 column: "ClassroomId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_material_technical_values_ClassroomId1",
-                table: "material_technical_values",
-                column: "ClassroomId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_material_technical_values_MaterialResponsiblePersonId",
@@ -284,29 +222,14 @@ namespace MolServiceDatabaseImplement.Migrations
                 column: "MaterialResponsiblePersonId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_material_technical_values_MaterialResponsiblePersonId1",
-                table: "material_technical_values",
-                column: "MaterialResponsiblePersonId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_software_records_MaterialTechnicalValueId",
                 table: "software_records",
                 column: "MaterialTechnicalValueId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_software_records_MaterialTechnicalValueId1",
-                table: "software_records",
-                column: "MaterialTechnicalValueId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_software_records_SoftwareId",
                 table: "software_records",
                 column: "SoftwareId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_software_records_SoftwareId1",
-                table: "software_records",
-                column: "SoftwareId1");
         }
 
         /// <inheritdoc />

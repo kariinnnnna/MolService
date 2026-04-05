@@ -22,5 +22,6 @@ namespace MolServiceContracts.ViewModels
         public int Capacity { get; set; }
 
         public bool NotUseInSchedule { get; set; }
+        public bool HasProjector { get; set; }
     }
 }

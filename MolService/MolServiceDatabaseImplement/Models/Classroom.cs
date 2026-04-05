@@ -22,6 +22,8 @@ namespace MolServiceDatabaseImplement.Models
 
         public bool NotUseInSchedule { get; set; }
 
+        public bool HasProjector { get; set; }
+
         public virtual List<MaterialTechnicalValue> MaterialTechnicalValues { get; set; } = new();
     }
 }

@@ -15,5 +15,6 @@ namespace MolServiceContracts.SearchModels
         public string? Number { get; set; }
 
         public bool? NotUseInSchedule { get; set; }
+        public bool? HasProjector { get; set; }
     }
 }

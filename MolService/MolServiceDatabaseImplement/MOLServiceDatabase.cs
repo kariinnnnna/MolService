@@ -1,11 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MolServiceDatabaseImplement.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MolServiceDatabaseImplement
 {
@@ -15,7 +9,6 @@ namespace MolServiceDatabaseImplement
         {
         }
 
-        // DbSet для всех сущностей
         public virtual DbSet<Classroom> Classrooms { get; set; }
         public virtual DbSet<MaterialResponsiblePerson> MaterialResponsiblePersons { get; set; }
         public virtual DbSet<MaterialTechnicalValue> MaterialTechnicalValues { get; set; }
@@ -25,12 +18,10 @@ namespace MolServiceDatabaseImplement
         public virtual DbSet<MaterialTechnicalValueGroup> MaterialTechnicalValueGroups { get; set; }
         public virtual DbSet<MaterialTechnicalValueRecord> MaterialTechnicalValueRecords { get; set; }
 
-        // Конфигурация моделей через Fluent API
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Настройка сущности Classroom
             modelBuilder.Entity<Classroom>(entity =>
             {
                 entity.ToTable("classrooms");
@@ -43,19 +34,16 @@ namespace MolServiceDatabaseImplement
                 entity.HasIndex(x => x.Number);
             });
 
-            // Настройка сущности MaterialResponsiblePerson
             modelBuilder.Entity<MaterialResponsiblePerson>(entity =>
             {
                 entity.ToTable("material_responsible_persons");
                 entity.HasKey(x => x.Id);
                 entity.Property(x => x.FullName).IsRequired().HasMaxLength(200);
                 entity.Property(x => x.Position).HasMaxLength(150);
-                entity.Property(x => x.Department).HasMaxLength(150);
                 entity.Property(x => x.Phone).HasMaxLength(30);
                 entity.Property(x => x.Email).HasMaxLength(150);
             });
 
-            // Настройка сущности MaterialTechnicalValue
             modelBuilder.Entity<MaterialTechnicalValue>(entity =>
             {
                 entity.ToTable("material_technical_values");
@@ -66,20 +54,18 @@ namespace MolServiceDatabaseImplement
                 entity.Property(x => x.Location).HasMaxLength(200);
                 entity.Property(x => x.Cost).IsRequired().HasColumnType("decimal(18,2)");
 
-                // Связь с Classroom
                 entity.HasOne(x => x.Classroom)
-                    .WithMany()
+                    .WithMany(x => x.MaterialTechnicalValues)
                     .HasForeignKey(x => x.ClassroomId)
+                    .IsRequired(false)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                // Связь с MaterialResponsiblePerson
                 entity.HasOne(x => x.MaterialResponsiblePerson)
-                    .WithMany()
+                    .WithMany(x => x.MaterialTechnicalValues)
                     .HasForeignKey(x => x.MaterialResponsiblePersonId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Настройка сущности Software
             modelBuilder.Entity<Software>(entity =>
             {
                 entity.ToTable("softwares");
@@ -90,7 +76,6 @@ namespace MolServiceDatabaseImplement
                 entity.Property(x => x.SoftwareK).HasMaxLength(500);
             });
 
-            // Настройка сущности SoftwareRecord
             modelBuilder.Entity<SoftwareRecord>(entity =>
             {
                 entity.ToTable("software_records");
@@ -98,20 +83,17 @@ namespace MolServiceDatabaseImplement
                 entity.Property(x => x.SetupDescription).HasMaxLength(1000);
                 entity.Property(x => x.ClaimNumber).HasMaxLength(200);
 
-                // Связь с MaterialTechnicalValue
                 entity.HasOne(x => x.MaterialTechnicalValue)
-                    .WithMany()
+                    .WithMany(x => x.SoftwareRecords)
                     .HasForeignKey(x => x.MaterialTechnicalValueId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                // Связь с Software
                 entity.HasOne(x => x.Software)
-                    .WithMany()
+                    .WithMany(x => x.SoftwareRecords)
                     .HasForeignKey(x => x.SoftwareId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Настройка сущности EquipmentMovementHistory
             modelBuilder.Entity<EquipmentMovementHistory>(entity =>
             {
                 entity.ToTable("equipment_movement_histories");
@@ -119,14 +101,12 @@ namespace MolServiceDatabaseImplement
                 entity.Property(x => x.MoveDate).IsRequired();
                 entity.Property(x => x.Reason).HasMaxLength(1000);
 
-                // Связь с MaterialTechnicalValue
                 entity.HasOne(x => x.MaterialTechnicalValue)
-                    .WithMany()
+                    .WithMany(x => x.EquipmentMovementHistories)
                     .HasForeignKey(x => x.MaterialTechnicalValueId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Настройка сущности MaterialTechnicalValueGroup
             modelBuilder.Entity<MaterialTechnicalValueGroup>(entity =>
             {
                 entity.ToTable("material_technical_value_groups");
@@ -135,7 +115,6 @@ namespace MolServiceDatabaseImplement
                 entity.Property(x => x.Order).IsRequired();
             });
 
-            // Настройка сущности MaterialTechnicalValueRecord
             modelBuilder.Entity<MaterialTechnicalValueRecord>(entity =>
             {
                 entity.ToTable("material_technical_value_records");
@@ -144,15 +123,13 @@ namespace MolServiceDatabaseImplement
                 entity.Property(x => x.FieldValue).HasMaxLength(1000);
                 entity.Property(x => x.Order).IsRequired();
 
-                // Связь с MaterialTechnicalValueGroup
                 entity.HasOne(x => x.MaterialTechnicalValueGroup)
-                    .WithMany()
+                    .WithMany(x => x.MaterialTechnicalValueRecords)
                     .HasForeignKey(x => x.MaterialTechnicalValueGroupId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                // Связь с MaterialTechnicalValue
                 entity.HasOne(x => x.MaterialTechnicalValue)
-                    .WithMany()
+                    .WithMany(x => x.MaterialTechnicalValueRecords)
                     .HasForeignKey(x => x.MaterialTechnicalValueId)
                     .OnDelete(DeleteBehavior.Restrict);
             });

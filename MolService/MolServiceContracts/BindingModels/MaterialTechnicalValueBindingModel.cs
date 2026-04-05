@@ -20,12 +20,15 @@ namespace MolServiceContracts.BindingModels
 
         [Required(ErrorMessage = "Аудитория обязательна")]
         [Display(Name = "Аудитория")]
-        public int ClassroomId { get; set; }
+        public int? ClassroomId { get; set; }
 
         [Required(ErrorMessage = "Наименование обязательно")]
         [StringLength(200, ErrorMessage = "Наименование не должно превышать 200 символов")]
         [Display(Name = "Наименование")]
         public string FullName { get; set; } = string.Empty;
+        [Range(0, double.MaxValue, ErrorMessage = "Количество не может быть отрицательным")]
+        [Display(Name = "Количество")]
+        public decimal Quantity { get; set; }
 
         [StringLength(1000, ErrorMessage = "Описание не должно превышать 1000 символов")]
         [Display(Name = "Описание")]
@@ -38,6 +41,7 @@ namespace MolServiceContracts.BindingModels
         [Range(0, double.MaxValue, ErrorMessage = "Стоимость не может быть отрицательной")]
         [Display(Name = "Стоимость")]
         public decimal Cost { get; set; }
+
 
         [Required(ErrorMessage = "Материально ответственное лицо обязательно")]
         [Display(Name = "Материально ответственное лицо")]

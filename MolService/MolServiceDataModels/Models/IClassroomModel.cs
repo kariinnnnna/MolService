@@ -14,5 +14,6 @@ namespace MolServiceDataModels.Models
         ClassroomType Type { get; }
         int Capacity { get; }
         bool NotUseInSchedule { get; }
+        bool HasProjector { get; }
     }
 }

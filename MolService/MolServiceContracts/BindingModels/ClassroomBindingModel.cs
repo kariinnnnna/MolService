@@ -32,5 +32,7 @@ namespace MolServiceContracts.BindingModels
 
         [Display(Name = "Не использовать в расписании")]
         public bool NotUseInSchedule { get; set; }
+        [Display(Name = "Наличие проектора")]
+        public bool HasProjector { get; set; }
     }
 }

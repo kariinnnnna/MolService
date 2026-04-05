@@ -12,17 +12,19 @@ namespace MolServiceContracts.ViewModels
 
         public string InventoryNumber { get; set; } = string.Empty;
 
-        public int ClassroomId { get; set; }
+        public int? ClassroomId { get; set; }
 
         public string ClassroomNumber { get; set; } = string.Empty;
 
         public string FullName { get; set; } = string.Empty;
+        public decimal Quantity { get; set; }
 
         public string Description { get; set; } = string.Empty;
 
         public string Location { get; set; } = string.Empty;
 
         public decimal Cost { get; set; }
+
 
         public int MaterialResponsiblePersonId { get; set; }
 

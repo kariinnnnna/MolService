@@ -22,10 +22,6 @@ namespace MolServiceContracts.BindingModels
         [Display(Name = "Должность")]
         public string Position { get; set; } = string.Empty;
 
-        [StringLength(150, ErrorMessage = "Подразделение не должно превышать 150 символов")]
-        [Display(Name = "Подразделение")]
-        public string Department { get; set; } = string.Empty;
-
         [StringLength(30, ErrorMessage = "Телефон не должен превышать 30 символов")]
         [Display(Name = "Телефон")]
         public string Phone { get; set; } = string.Empty;

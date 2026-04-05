@@ -10,7 +10,6 @@ namespace MolServiceDataModels.Models
     {
         string FullName { get; }
         string Position { get; }
-        string Department { get; }
         string Phone { get; }
         string Email { get; }
     }

@@ -46,11 +46,6 @@ namespace MolServiceDatabaseImplement.Implements
                 query = query.Where(x => x.FullName.Contains(model.FullName));
             }
 
-            if (!string.IsNullOrWhiteSpace(model.Department))
-            {
-                query = query.Where(x => x.Department.Contains(model.Department));
-            }
-
             return query
                 .Select(x => CreateModel(x))
                 .ToList();
@@ -75,7 +70,6 @@ namespace MolServiceDatabaseImplement.Implements
             {
                 FullName = model.FullName,
                 Position = model.Position,
-                Department = model.Department,
                 Phone = model.Phone,
                 Email = model.Email
             };
@@ -96,7 +90,6 @@ namespace MolServiceDatabaseImplement.Implements
 
             entity.FullName = model.FullName;
             entity.Position = model.Position;
-            entity.Department = model.Department;
             entity.Phone = model.Phone;
             entity.Email = model.Email;
 
@@ -127,7 +120,6 @@ namespace MolServiceDatabaseImplement.Implements
                 Id = entity.Id,
                 FullName = entity.FullName,
                 Position = entity.Position,
-                Department = entity.Department,
                 Phone = entity.Phone,
                 Email = entity.Email
             };

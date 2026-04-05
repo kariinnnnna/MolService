@@ -9,11 +9,13 @@ namespace MolServiceDataModels.Models
     public interface IMaterialTechnicalValueModel : IId
     {
         string InventoryNumber { get; }
-        int ClassroomId { get; }
+        int? ClassroomId { get; }
         string FullName { get; }
+        decimal Quantity { get; }
         string Description { get; }
         string Location { get; }
         decimal Cost { get; }
+
         int MaterialResponsiblePersonId { get; }
     }
 }

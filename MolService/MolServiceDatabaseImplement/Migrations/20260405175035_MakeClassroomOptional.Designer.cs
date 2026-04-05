@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MolServiceDatabaseImplement.Migrations
 {
     [DbContext(typeof(MOLServiceDatabase))]
-    [Migration("20260402065816_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260405175035_MakeClassroomOptional")]
+    partial class MakeClassroomOptional
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,9 @@ namespace MolServiceDatabaseImplement.Migrations
 
                     b.Property<int>("CoreSystemId")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("HasProjector")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("NotUseInSchedule")
                         .HasColumnType("boolean");
@@ -71,9 +74,6 @@ namespace MolServiceDatabaseImplement.Migrations
                     b.Property<int>("MaterialTechnicalValueId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MaterialTechnicalValueId1")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime>("MoveDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -86,8 +86,6 @@ namespace MolServiceDatabaseImplement.Migrations
 
                     b.HasIndex("MaterialTechnicalValueId");
 
-                    b.HasIndex("MaterialTechnicalValueId1");
-
                     b.ToTable("equipment_movement_histories", (string)null);
                 });
 
@@ -98,11 +96,6 @@ namespace MolServiceDatabaseImplement.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Department")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -137,10 +130,7 @@ namespace MolServiceDatabaseImplement.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClassroomId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ClassroomId1")
+                    b.Property<int?>("ClassroomId")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Cost")
@@ -169,18 +159,11 @@ namespace MolServiceDatabaseImplement.Migrations
                     b.Property<int>("MaterialResponsiblePersonId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MaterialResponsiblePersonId1")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ClassroomId");
 
-                    b.HasIndex("ClassroomId1");
-
                     b.HasIndex("MaterialResponsiblePersonId");
-
-                    b.HasIndex("MaterialResponsiblePersonId1");
 
                     b.ToTable("material_technical_values", (string)null);
                 });
@@ -227,13 +210,7 @@ namespace MolServiceDatabaseImplement.Migrations
                     b.Property<int>("MaterialTechnicalValueGroupId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MaterialTechnicalValueGroupId1")
-                        .HasColumnType("integer");
-
                     b.Property<int>("MaterialTechnicalValueId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("MaterialTechnicalValueId1")
                         .HasColumnType("integer");
 
                     b.Property<int>("Order")
@@ -243,12 +220,7 @@ namespace MolServiceDatabaseImplement.Migrations
 
                     b.HasIndex("MaterialTechnicalValueGroupId");
 
-                    b.HasIndex("MaterialTechnicalValueGroupId1")
-                        .HasDatabaseName("IX_material_technical_value_records_MaterialTechnicalValueGro~1");
-
                     b.HasIndex("MaterialTechnicalValueId");
-
-                    b.HasIndex("MaterialTechnicalValueId1");
 
                     b.ToTable("material_technical_value_records", (string)null);
                 });
@@ -302,9 +274,6 @@ namespace MolServiceDatabaseImplement.Migrations
                     b.Property<int>("MaterialTechnicalValueId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MaterialTechnicalValueId1")
-                        .HasColumnType("integer");
-
                     b.Property<string>("SetupDescription")
                         .IsRequired()
                         .HasMaxLength(1000)
@@ -313,18 +282,11 @@ namespace MolServiceDatabaseImplement.Migrations
                     b.Property<int>("SoftwareId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("SoftwareId1")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
                     b.HasIndex("MaterialTechnicalValueId");
 
-                    b.HasIndex("MaterialTechnicalValueId1");
-
                     b.HasIndex("SoftwareId");
-
-                    b.HasIndex("SoftwareId1");
 
                     b.ToTable("software_records", (string)null);
                 });
@@ -332,15 +294,10 @@ namespace MolServiceDatabaseImplement.Migrations
             modelBuilder.Entity("MolServiceDatabaseImplement.Models.EquipmentMovementHistory", b =>
                 {
                     b.HasOne("MolServiceDatabaseImplement.Models.MaterialTechnicalValue", "MaterialTechnicalValue")
-                        .WithMany()
+                        .WithMany("EquipmentMovementHistories")
                         .HasForeignKey("MaterialTechnicalValueId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("MolServiceDatabaseImplement.Models.MaterialTechnicalValue", null)
-                        .WithMany("EquipmentMovementHistories")
-                        .HasForeignKey("MaterialTechnicalValueId1")
-                        .HasConstraintName("FK_equipment_movement_histories_material_technical_values_Mat~1");
 
                     b.Navigation("MaterialTechnicalValue");
                 });
@@ -348,25 +305,15 @@ namespace MolServiceDatabaseImplement.Migrations
             modelBuilder.Entity("MolServiceDatabaseImplement.Models.MaterialTechnicalValue", b =>
                 {
                     b.HasOne("MolServiceDatabaseImplement.Models.Classroom", "Classroom")
-                        .WithMany()
-                        .HasForeignKey("ClassroomId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("MolServiceDatabaseImplement.Models.Classroom", null)
                         .WithMany("MaterialTechnicalValues")
-                        .HasForeignKey("ClassroomId1");
+                        .HasForeignKey("ClassroomId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("MolServiceDatabaseImplement.Models.MaterialResponsiblePerson", "MaterialResponsiblePerson")
-                        .WithMany()
+                        .WithMany("MaterialTechnicalValues")
                         .HasForeignKey("MaterialResponsiblePersonId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("MolServiceDatabaseImplement.Models.MaterialResponsiblePerson", null)
-                        .WithMany("MaterialTechnicalValues")
-                        .HasForeignKey("MaterialResponsiblePersonId1")
-                        .HasConstraintName("FK_material_technical_values_material_responsible_persons_Mat~1");
 
                     b.Navigation("Classroom");
 
@@ -376,26 +323,16 @@ namespace MolServiceDatabaseImplement.Migrations
             modelBuilder.Entity("MolServiceDatabaseImplement.Models.MaterialTechnicalValueRecord", b =>
                 {
                     b.HasOne("MolServiceDatabaseImplement.Models.MaterialTechnicalValueGroup", "MaterialTechnicalValueGroup")
-                        .WithMany()
+                        .WithMany("MaterialTechnicalValueRecords")
                         .HasForeignKey("MaterialTechnicalValueGroupId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MolServiceDatabaseImplement.Models.MaterialTechnicalValueGroup", null)
-                        .WithMany("MaterialTechnicalValueRecords")
-                        .HasForeignKey("MaterialTechnicalValueGroupId1")
-                        .HasConstraintName("FK_material_technical_value_records_material_technical_value_~1");
-
                     b.HasOne("MolServiceDatabaseImplement.Models.MaterialTechnicalValue", "MaterialTechnicalValue")
-                        .WithMany()
+                        .WithMany("MaterialTechnicalValueRecords")
                         .HasForeignKey("MaterialTechnicalValueId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("MolServiceDatabaseImplement.Models.MaterialTechnicalValue", null)
-                        .WithMany("MaterialTechnicalValueRecords")
-                        .HasForeignKey("MaterialTechnicalValueId1")
-                        .HasConstraintName("FK_material_technical_value_records_material_technical_values~1");
 
                     b.Navigation("MaterialTechnicalValue");
 
@@ -405,25 +342,16 @@ namespace MolServiceDatabaseImplement.Migrations
             modelBuilder.Entity("MolServiceDatabaseImplement.Models.SoftwareRecord", b =>
                 {
                     b.HasOne("MolServiceDatabaseImplement.Models.MaterialTechnicalValue", "MaterialTechnicalValue")
-                        .WithMany()
+                        .WithMany("SoftwareRecords")
                         .HasForeignKey("MaterialTechnicalValueId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MolServiceDatabaseImplement.Models.MaterialTechnicalValue", null)
-                        .WithMany("SoftwareRecords")
-                        .HasForeignKey("MaterialTechnicalValueId1")
-                        .HasConstraintName("FK_software_records_material_technical_values_MaterialTechnic~1");
-
                     b.HasOne("MolServiceDatabaseImplement.Models.Software", "Software")
-                        .WithMany()
+                        .WithMany("SoftwareRecords")
                         .HasForeignKey("SoftwareId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.HasOne("MolServiceDatabaseImplement.Models.Software", null)
-                        .WithMany("SoftwareRecords")
-                        .HasForeignKey("SoftwareId1");
 
                     b.Navigation("MaterialTechnicalValue");
 
