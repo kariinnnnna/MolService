@@ -106,6 +106,7 @@ namespace MolServiceDatabaseImplement.Implements
                 InventoryNumber = model.InventoryNumber,
                 ClassroomId = model.ClassroomId,
                 FullName = model.FullName,
+                Quantity = model.Quantity,
                 Description = model.Description,
                 Location = model.Location,
                 Cost = model.Cost,
@@ -129,6 +130,7 @@ namespace MolServiceDatabaseImplement.Implements
             entity.InventoryNumber = model.InventoryNumber;
             entity.ClassroomId = model.ClassroomId;
             entity.FullName = model.FullName;
+            entity.Quantity = model.Quantity;
             entity.Description = model.Description;
             entity.Location = model.Location;
             entity.Cost = model.Cost;
@@ -163,6 +165,7 @@ namespace MolServiceDatabaseImplement.Implements
                 ClassroomId = entity.ClassroomId,
                 ClassroomNumber = entity.Classroom?.Number ?? string.Empty,
                 FullName = entity.FullName,
+                Quantity = entity.Quantity,
                 Description = entity.Description,
                 Location = entity.Location,
                 Cost = entity.Cost,

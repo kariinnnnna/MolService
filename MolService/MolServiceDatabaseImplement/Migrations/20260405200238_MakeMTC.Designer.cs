@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MolServiceDatabaseImplement.Migrations
 {
     [DbContext(typeof(MOLServiceDatabase))]
-    [Migration("20260405195527_MakeMTC")]
+    [Migration("20260405200238_MakeMTC")]
     partial class MakeMTC
     {
         /// <inheritdoc />

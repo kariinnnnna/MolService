@@ -18,7 +18,6 @@ namespace MolServiceContracts.BindingModels
         [Display(Name = "Инвентарный номер")]
         public string InventoryNumber { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Аудитория обязательна")]
         [Display(Name = "Аудитория")]
         public int? ClassroomId { get; set; }
 
