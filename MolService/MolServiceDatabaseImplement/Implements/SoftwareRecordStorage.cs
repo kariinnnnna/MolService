@@ -1,0 +1,145 @@
+﻿using Microsoft.EntityFrameworkCore;
+using MolServiceContracts.BindingModels;
+using MolServiceContracts.SearchModels;
+using MolServiceContracts.StorageContracts;
+using MolServiceContracts.ViewModels;
+using MolServiceDatabaseImplement.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MolServiceDatabaseImplement.Implements
+{
+    public class SoftwareRecordStorage : ISoftwareRecordStorage
+    {
+        private readonly MOLServiceDatabase _context;
+
+        public SoftwareRecordStorage(MOLServiceDatabase context)
+        {
+            _context = context;
+        }
+
+        public List<SoftwareRecordViewModel> GetFullList()
+        {
+            return _context.SoftwareRecords
+                .Include(x => x.MaterialTechnicalValue)
+                .Include(x => x.Software)
+                .Select(x => CreateModel(x))
+                .ToList();
+        }
+
+        public List<SoftwareRecordViewModel> GetFilteredList(SoftwareRecordSearchModel model)
+        {
+            if (model == null)
+            {
+                return new();
+            }
+
+            var query = _context.SoftwareRecords
+                .Include(x => x.MaterialTechnicalValue)
+                .Include(x => x.Software)
+                .AsQueryable();
+
+            if (model.MaterialTechnicalValueId.HasValue)
+            {
+                query = query.Where(x => x.MaterialTechnicalValueId == model.MaterialTechnicalValueId.Value);
+            }
+
+            if (model.SoftwareId.HasValue)
+            {
+                query = query.Where(x => x.SoftwareId == model.SoftwareId.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.ClaimNumber))
+            {
+                query = query.Where(x => x.ClaimNumber.Contains(model.ClaimNumber));
+            }
+
+            return query
+                .Select(x => CreateModel(x))
+                .ToList();
+        }
+
+        public SoftwareRecordViewModel? GetElement(SoftwareRecordSearchModel model)
+        {
+            if (model == null)
+            {
+                return null;
+            }
+
+            var entity = _context.SoftwareRecords
+                .Include(x => x.MaterialTechnicalValue)
+                .Include(x => x.Software)
+                .FirstOrDefault(x =>
+                    (model.MaterialTechnicalValueId.HasValue && x.MaterialTechnicalValueId == model.MaterialTechnicalValueId.Value) ||
+                    (model.SoftwareId.HasValue && x.SoftwareId == model.SoftwareId.Value));
+
+            return entity != null ? CreateModel(entity) : null;
+        }
+
+        public SoftwareRecordViewModel? Insert(SoftwareRecordBindingModel model)
+        {
+            var entity = new SoftwareRecord
+            {
+                MaterialTechnicalValueId = model.MaterialTechnicalValueId,
+                SoftwareId = model.SoftwareId,
+                SetupDescription = model.SetupDescription,
+                ClaimNumber = model.ClaimNumber
+            };
+
+            _context.SoftwareRecords.Add(entity);
+            _context.SaveChanges();
+
+            return CreateModel(entity);
+        }
+
+        public SoftwareRecordViewModel? Update(SoftwareRecordBindingModel model)
+        {
+            var entity = _context.SoftwareRecords.FirstOrDefault(x => x.Id == model.Id);
+            if (entity == null)
+            {
+                return null;
+            }
+
+            entity.MaterialTechnicalValueId = model.MaterialTechnicalValueId;
+            entity.SoftwareId = model.SoftwareId;
+            entity.SetupDescription = model.SetupDescription;
+            entity.ClaimNumber = model.ClaimNumber;
+
+            _context.SaveChanges();
+
+            return CreateModel(entity);
+        }
+
+        public SoftwareRecordViewModel? Delete(SoftwareRecordBindingModel model)
+        {
+            var entity = _context.SoftwareRecords.FirstOrDefault(x => x.Id == model.Id);
+            if (entity == null)
+            {
+                return null;
+            }
+
+            var result = CreateModel(entity);
+            _context.SoftwareRecords.Remove(entity);
+            _context.SaveChanges();
+
+            return result;
+        }
+
+        private static SoftwareRecordViewModel CreateModel(SoftwareRecord entity)
+        {
+            return new SoftwareRecordViewModel
+            {
+                Id = entity.Id,
+                MaterialTechnicalValueId = entity.MaterialTechnicalValueId,
+                MaterialTechnicalValueName = entity.MaterialTechnicalValue?.FullName ?? string.Empty,
+                SoftwareId = entity.SoftwareId,
+                SoftwareName = entity.Software?.SoftwareName ?? string.Empty,
+                SetupDescription = entity.SetupDescription,
+                ClaimNumber = entity.ClaimNumber
+            };
+        }
+    }
+}
