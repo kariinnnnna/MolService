@@ -35,4 +35,5 @@ namespace MolServiceContracts.BindingModels
         [Display(Name = "Наличие проектора")]
         public bool HasProjector { get; set; }
     }
+
 }
