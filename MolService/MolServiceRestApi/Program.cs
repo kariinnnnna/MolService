@@ -9,7 +9,13 @@ using MolServiceBusinessLogic.Helpers;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<MOLServiceDatabase>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        x =>
+        {
+            x.MigrationsAssembly("MolServiceDatabaseImplement");
+            x.MigrationsHistoryTable("__EFMigrationsHistory_MolService");
+        }));
 
 builder.Services.AddScoped<IClassroomStorage, ClassroomStorage>();
 builder.Services.AddScoped<IEquipmentMovementHistoryStorage, EquipmentMovementHistoryStorage>();

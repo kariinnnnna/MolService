@@ -67,16 +67,6 @@ namespace MolServiceDatabaseImplement.Implements
                 query = query.Where(x => x.Location.Contains(model.Location));
             }
 
-            if (model.CostFrom.HasValue)
-            {
-                query = query.Where(x => x.Cost >= model.CostFrom.Value);
-            }
-
-            if (model.CostTo.HasValue)
-            {
-                query = query.Where(x => x.Cost <= model.CostTo.Value);
-            }
-
             return query
                 .Select(x => CreateModel(x))
                 .ToList();
@@ -109,7 +99,6 @@ namespace MolServiceDatabaseImplement.Implements
                 Quantity = model.Quantity,
                 Description = model.Description,
                 Location = model.Location,
-                Cost = model.Cost,
                 MaterialResponsiblePersonId = model.MaterialResponsiblePersonId
             };
 
@@ -133,7 +122,6 @@ namespace MolServiceDatabaseImplement.Implements
             entity.Quantity = model.Quantity;
             entity.Description = model.Description;
             entity.Location = model.Location;
-            entity.Cost = model.Cost;
             entity.MaterialResponsiblePersonId = model.MaterialResponsiblePersonId;
 
             _context.SaveChanges();
@@ -168,7 +156,6 @@ namespace MolServiceDatabaseImplement.Implements
                 Quantity = entity.Quantity,
                 Description = entity.Description,
                 Location = entity.Location,
-                Cost = entity.Cost,
                 MaterialResponsiblePersonId = entity.MaterialResponsiblePersonId,
                 MaterialResponsiblePersonName = entity.MaterialResponsiblePerson?.FullName ?? string.Empty
             };

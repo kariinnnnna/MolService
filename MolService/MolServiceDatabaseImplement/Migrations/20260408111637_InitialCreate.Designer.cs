@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MolServiceDatabaseImplement;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MolServiceDatabaseImplement.Migrations
 {
     [DbContext(typeof(MOLServiceDatabase))]
-    partial class MOLServiceDatabaseModelSnapshot : ModelSnapshot
+    [Migration("20260408111637_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,19 +71,11 @@ namespace MolServiceDatabaseImplement.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("character varying(1000)");
-
                     b.Property<int>("MaterialTechnicalValueId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("MoveDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Reason")
                         .IsRequired()
@@ -137,6 +132,9 @@ namespace MolServiceDatabaseImplement.Migrations
 
                     b.Property<int?>("ClassroomId")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("Cost")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -289,10 +287,9 @@ namespace MolServiceDatabaseImplement.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SoftwareId");
+                    b.HasIndex("MaterialTechnicalValueId");
 
-                    b.HasIndex("MaterialTechnicalValueId", "SoftwareId")
-                        .IsUnique();
+                    b.HasIndex("SoftwareId");
 
                     b.ToTable("software_records", (string)null);
                 });

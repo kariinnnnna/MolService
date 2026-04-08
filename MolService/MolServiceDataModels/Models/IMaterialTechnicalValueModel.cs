@@ -14,8 +14,6 @@ namespace MolServiceDataModels.Models
         decimal Quantity { get; }
         string Description { get; }
         string Location { get; }
-        decimal Cost { get; }
-
         int MaterialResponsiblePersonId { get; }
     }
 }

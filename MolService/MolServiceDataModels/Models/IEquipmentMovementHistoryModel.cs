@@ -10,6 +10,8 @@ namespace MolServiceDataModels.Models
     {
         DateTime MoveDate { get; }
         string Reason { get; }
+        decimal Quantity { get; }
+        string Comment { get; }
         int MaterialTechnicalValueId { get; }
     }
 }

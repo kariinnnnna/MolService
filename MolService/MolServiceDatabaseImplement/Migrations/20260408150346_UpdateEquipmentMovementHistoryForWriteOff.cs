@@ -5,7 +5,7 @@
 namespace MolServiceDatabaseImplement.Migrations
 {
     /// <inheritdoc />
-    public partial class MakeMTC : Migration
+    public partial class UpdateEquipmentMovementHistoryForWriteOff : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

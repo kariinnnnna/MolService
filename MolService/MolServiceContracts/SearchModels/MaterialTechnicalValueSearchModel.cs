@@ -18,10 +18,6 @@ namespace MolServiceContracts.SearchModels
 
         public string? Location { get; set; }
 
-        public decimal? CostFrom { get; set; }
-
-        public decimal? CostTo { get; set; }
-
         public int? MaterialResponsiblePersonId { get; set; }
     }
 }

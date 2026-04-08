@@ -37,11 +37,6 @@ namespace MolServiceContracts.BindingModels
         [Display(Name = "Местоположение")]
         public string Location { get; set; } = string.Empty;
 
-        [Range(0, double.MaxValue, ErrorMessage = "Стоимость не может быть отрицательной")]
-        [Display(Name = "Стоимость")]
-        public decimal Cost { get; set; }
-
-
         [Required(ErrorMessage = "Материально ответственное лицо обязательно")]
         [Display(Name = "Материально ответственное лицо")]
         public int MaterialResponsiblePersonId { get; set; }

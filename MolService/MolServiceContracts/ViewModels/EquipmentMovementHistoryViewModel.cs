@@ -14,6 +14,10 @@ namespace MolServiceContracts.ViewModels
 
         public string Reason { get; set; } = string.Empty;
 
+        public decimal Quantity { get; set; }
+
+        public string Comment { get; set; } = string.Empty;
+
         public int MaterialTechnicalValueId { get; set; }
 
         public string MaterialTechnicalValueName { get; set; } = string.Empty;

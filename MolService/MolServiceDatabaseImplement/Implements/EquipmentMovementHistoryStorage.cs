@@ -25,6 +25,8 @@ namespace MolServiceDatabaseImplement.Implements
         {
             return _context.EquipmentMovementHistories
                 .Include(x => x.MaterialTechnicalValue)
+                .OrderByDescending(x => x.MoveDate)
+                .ThenByDescending(x => x.Id)
                 .Select(x => CreateModel(x))
                 .ToList();
         }
@@ -33,12 +35,17 @@ namespace MolServiceDatabaseImplement.Implements
         {
             if (model == null)
             {
-                return new();
+                return new List<EquipmentMovementHistoryViewModel>();
             }
 
             var query = _context.EquipmentMovementHistories
                 .Include(x => x.MaterialTechnicalValue)
                 .AsQueryable();
+
+            if (model.Id.HasValue)
+            {
+                query = query.Where(x => x.Id == model.Id.Value);
+            }
 
             if (model.MoveDateFrom.HasValue)
             {
@@ -56,6 +63,8 @@ namespace MolServiceDatabaseImplement.Implements
             }
 
             return query
+                .OrderByDescending(x => x.MoveDate)
+                .ThenByDescending(x => x.Id)
                 .Select(x => CreateModel(x))
                 .ToList();
         }
@@ -67,10 +76,27 @@ namespace MolServiceDatabaseImplement.Implements
                 return null;
             }
 
-            var entity = _context.EquipmentMovementHistories
+            var query = _context.EquipmentMovementHistories
                 .Include(x => x.MaterialTechnicalValue)
-                .FirstOrDefault(x =>
-                    model.MaterialTechnicalValueId.HasValue && x.MaterialTechnicalValueId == model.MaterialTechnicalValueId.Value);
+                .AsQueryable();
+
+            if (model.Id.HasValue)
+            {
+                query = query.Where(x => x.Id == model.Id.Value);
+            }
+            else if (model.MaterialTechnicalValueId.HasValue)
+            {
+                query = query.Where(x => x.MaterialTechnicalValueId == model.MaterialTechnicalValueId.Value);
+            }
+            else
+            {
+                return null;
+            }
+
+            var entity = query
+                .OrderByDescending(x => x.MoveDate)
+                .ThenByDescending(x => x.Id)
+                .FirstOrDefault();
 
             return entity != null ? CreateModel(entity) : null;
         }
@@ -81,18 +107,27 @@ namespace MolServiceDatabaseImplement.Implements
             {
                 MoveDate = model.MoveDate,
                 Reason = model.Reason,
+                Quantity = model.Quantity,
+                Comment = model.Comment,
                 MaterialTechnicalValueId = model.MaterialTechnicalValueId
             };
 
             _context.EquipmentMovementHistories.Add(entity);
             _context.SaveChanges();
 
+            entity = _context.EquipmentMovementHistories
+                .Include(x => x.MaterialTechnicalValue)
+                .First(x => x.Id == entity.Id);
+
             return CreateModel(entity);
         }
 
         public EquipmentMovementHistoryViewModel? Update(EquipmentMovementHistoryBindingModel model)
         {
-            var entity = _context.EquipmentMovementHistories.FirstOrDefault(x => x.Id == model.Id);
+            var entity = _context.EquipmentMovementHistories
+                .Include(x => x.MaterialTechnicalValue)
+                .FirstOrDefault(x => x.Id == model.Id);
+
             if (entity == null)
             {
                 return null;
@@ -100,6 +135,8 @@ namespace MolServiceDatabaseImplement.Implements
 
             entity.MoveDate = model.MoveDate;
             entity.Reason = model.Reason;
+            entity.Quantity = model.Quantity;
+            entity.Comment = model.Comment;
             entity.MaterialTechnicalValueId = model.MaterialTechnicalValueId;
 
             _context.SaveChanges();
@@ -109,13 +146,17 @@ namespace MolServiceDatabaseImplement.Implements
 
         public EquipmentMovementHistoryViewModel? Delete(EquipmentMovementHistoryBindingModel model)
         {
-            var entity = _context.EquipmentMovementHistories.FirstOrDefault(x => x.Id == model.Id);
+            var entity = _context.EquipmentMovementHistories
+                .Include(x => x.MaterialTechnicalValue)
+                .FirstOrDefault(x => x.Id == model.Id);
+
             if (entity == null)
             {
                 return null;
             }
 
             var result = CreateModel(entity);
+
             _context.EquipmentMovementHistories.Remove(entity);
             _context.SaveChanges();
 
@@ -129,6 +170,8 @@ namespace MolServiceDatabaseImplement.Implements
                 Id = entity.Id,
                 MoveDate = entity.MoveDate,
                 Reason = entity.Reason,
+                Quantity = entity.Quantity,
+                Comment = entity.Comment,
                 MaterialTechnicalValueId = entity.MaterialTechnicalValueId,
                 MaterialTechnicalValueName = entity.MaterialTechnicalValue?.FullName ?? string.Empty
             };

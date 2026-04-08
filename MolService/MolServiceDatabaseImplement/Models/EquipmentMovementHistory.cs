@@ -15,6 +15,10 @@ namespace MolServiceDatabaseImplement.Models
 
         public string Reason { get; set; } = string.Empty;
 
+        public decimal Quantity { get; set; }
+
+        public string Comment { get; set; } = string.Empty;
+
         public int MaterialTechnicalValueId { get; set; }
 
         public virtual MaterialTechnicalValue? MaterialTechnicalValue { get; set; }

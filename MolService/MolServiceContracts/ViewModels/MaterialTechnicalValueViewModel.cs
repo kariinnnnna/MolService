@@ -23,9 +23,6 @@ namespace MolServiceContracts.ViewModels
 
         public string Location { get; set; } = string.Empty;
 
-        public decimal Cost { get; set; }
-
-
         public int MaterialResponsiblePersonId { get; set; }
 
         public string MaterialResponsiblePersonName { get; set; } = string.Empty;

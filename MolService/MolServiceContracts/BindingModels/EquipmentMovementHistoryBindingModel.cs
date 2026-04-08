@@ -13,13 +13,23 @@ namespace MolServiceContracts.BindingModels
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Дата перемещения обязательна")]
-        [Display(Name = "Дата перемещения")]
-        public DateTime MoveDate { get; set; }
+        [Required(ErrorMessage = "Дата списания обязательна")]
+        [Display(Name = "Дата списания")]
+        public DateTime MoveDate { get; set; } = DateTime.Now;
 
+        [Required(ErrorMessage = "Причина списания обязательна")]
         [StringLength(1000, ErrorMessage = "Причина не должна превышать 1000 символов")]
-        [Display(Name = "Причина")]
+        [Display(Name = "Причина списания")]
         public string Reason { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Количество обязательно")]
+        [Range(typeof(decimal), "0,01", "999999999", ErrorMessage = "Количество должно быть больше 0")]
+        [Display(Name = "Количество к списанию")]
+        public decimal Quantity { get; set; }
+
+        [StringLength(1000, ErrorMessage = "Комментарий не должен превышать 1000 символов")]
+        [Display(Name = "Комментарий / основание")]
+        public string Comment { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Оборудование обязательно")]
         [Display(Name = "Оборудование")]

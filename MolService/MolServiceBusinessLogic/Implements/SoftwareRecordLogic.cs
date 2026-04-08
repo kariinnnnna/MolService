@@ -44,9 +44,25 @@ namespace MolServiceBusinessLogic.Implements
                 throw new ArgumentNullException(nameof(model));
             }
 
-            if (string.IsNullOrWhiteSpace(model.SetupDescription))
+            if (model.MaterialTechnicalValueId <= 0)
             {
-                throw new ArgumentException("Не указано описание настройки ПО");
+                throw new ArgumentException("Не указано оборудование");
+            }
+
+            if (model.SoftwareId <= 0)
+            {
+                throw new ArgumentException("Не указано программное обеспечение");
+            }
+
+            var duplicate = _storage.GetElement(new SoftwareRecordSearchModel
+            {
+                MaterialTechnicalValueId = model.MaterialTechnicalValueId,
+                SoftwareId = model.SoftwareId
+            });
+
+            if (duplicate != null)
+            {
+                throw new InvalidOperationException("Это программное обеспечение уже привязано к данному оборудованию");
             }
 
             return _storage.Insert(model);
@@ -64,14 +80,35 @@ namespace MolServiceBusinessLogic.Implements
                 throw new ArgumentException("Не указан идентификатор записи ПО");
             }
 
-            var element = _storage.GetElement(new SoftwareRecordSearchModel
+            if (model.MaterialTechnicalValueId <= 0)
+            {
+                throw new ArgumentException("Не указано оборудование");
+            }
+
+            if (model.SoftwareId <= 0)
+            {
+                throw new ArgumentException("Не указано программное обеспечение");
+            }
+
+            var current = _storage.GetElement(new SoftwareRecordSearchModel
             {
                 Id = model.Id
             });
 
-            if (element == null)
+            if (current == null)
             {
-                throw new InvalidOperationException("Запись ПО не найдена");
+                throw new InvalidOperationException("Запись о привязке ПО не найдена");
+            }
+
+            var duplicate = _storage.GetElement(new SoftwareRecordSearchModel
+            {
+                MaterialTechnicalValueId = model.MaterialTechnicalValueId,
+                SoftwareId = model.SoftwareId
+            });
+
+            if (duplicate != null && duplicate.Id != model.Id)
+            {
+                throw new InvalidOperationException("Это программное обеспечение уже привязано к данному оборудованию");
             }
 
             return _storage.Update(model);
@@ -96,7 +133,7 @@ namespace MolServiceBusinessLogic.Implements
 
             if (element == null)
             {
-                throw new InvalidOperationException("Запись ПО не найдена");
+                throw new InvalidOperationException("Запись о привязке ПО не найдена");
             }
 
             return _storage.Delete(model) != null;

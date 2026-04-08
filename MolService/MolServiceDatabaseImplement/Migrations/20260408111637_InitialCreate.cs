@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MolServiceDatabaseImplement.Migrations
 {
     /// <inheritdoc />
-    public partial class MakeClassroomOptional : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -85,6 +85,7 @@ namespace MolServiceDatabaseImplement.Migrations
                     InventoryNumber = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     ClassroomId = table.Column<int>(type: "integer", nullable: true),
                     FullName = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
+                    Quantity = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
                     Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     Location = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     Cost = table.Column<decimal>(type: "numeric(18,2)", nullable: false),

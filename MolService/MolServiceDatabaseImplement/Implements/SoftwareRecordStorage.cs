@@ -26,6 +26,8 @@ namespace MolServiceDatabaseImplement.Implements
             return _context.SoftwareRecords
                 .Include(x => x.MaterialTechnicalValue)
                 .Include(x => x.Software)
+                .OrderBy(x => x.MaterialTechnicalValue!.FullName)
+                .ThenBy(x => x.Software!.SoftwareName)
                 .Select(x => CreateModel(x))
                 .ToList();
         }
@@ -41,6 +43,11 @@ namespace MolServiceDatabaseImplement.Implements
                 .Include(x => x.MaterialTechnicalValue)
                 .Include(x => x.Software)
                 .AsQueryable();
+
+            if (model.Id.HasValue)
+            {
+                query = query.Where(x => x.Id == model.Id.Value);
+            }
 
             if (model.MaterialTechnicalValueId.HasValue)
             {
@@ -58,6 +65,8 @@ namespace MolServiceDatabaseImplement.Implements
             }
 
             return query
+                .OrderBy(x => x.MaterialTechnicalValue!.FullName)
+                .ThenBy(x => x.Software!.SoftwareName)
                 .Select(x => CreateModel(x))
                 .ToList();
         }
@@ -69,13 +78,27 @@ namespace MolServiceDatabaseImplement.Implements
                 return null;
             }
 
-            var entity = _context.SoftwareRecords
+            var query = _context.SoftwareRecords
                 .Include(x => x.MaterialTechnicalValue)
                 .Include(x => x.Software)
-                .FirstOrDefault(x =>
-                    (model.MaterialTechnicalValueId.HasValue && x.MaterialTechnicalValueId == model.MaterialTechnicalValueId.Value) ||
-                    (model.SoftwareId.HasValue && x.SoftwareId == model.SoftwareId.Value));
+                .AsQueryable();
 
+            if (model.Id.HasValue)
+            {
+                query = query.Where(x => x.Id == model.Id.Value);
+            }
+            else if (model.MaterialTechnicalValueId.HasValue && model.SoftwareId.HasValue)
+            {
+                query = query.Where(x =>
+                    x.MaterialTechnicalValueId == model.MaterialTechnicalValueId.Value &&
+                    x.SoftwareId == model.SoftwareId.Value);
+            }
+            else
+            {
+                return null;
+            }
+
+            var entity = query.FirstOrDefault();
             return entity != null ? CreateModel(entity) : null;
         }
 
@@ -92,12 +115,21 @@ namespace MolServiceDatabaseImplement.Implements
             _context.SoftwareRecords.Add(entity);
             _context.SaveChanges();
 
+            entity = _context.SoftwareRecords
+                .Include(x => x.MaterialTechnicalValue)
+                .Include(x => x.Software)
+                .First(x => x.Id == entity.Id);
+
             return CreateModel(entity);
         }
 
         public SoftwareRecordViewModel? Update(SoftwareRecordBindingModel model)
         {
-            var entity = _context.SoftwareRecords.FirstOrDefault(x => x.Id == model.Id);
+            var entity = _context.SoftwareRecords
+                .Include(x => x.MaterialTechnicalValue)
+                .Include(x => x.Software)
+                .FirstOrDefault(x => x.Id == model.Id);
+
             if (entity == null)
             {
                 return null;
@@ -115,13 +147,18 @@ namespace MolServiceDatabaseImplement.Implements
 
         public SoftwareRecordViewModel? Delete(SoftwareRecordBindingModel model)
         {
-            var entity = _context.SoftwareRecords.FirstOrDefault(x => x.Id == model.Id);
+            var entity = _context.SoftwareRecords
+                .Include(x => x.MaterialTechnicalValue)
+                .Include(x => x.Software)
+                .FirstOrDefault(x => x.Id == model.Id);
+
             if (entity == null)
             {
                 return null;
             }
 
             var result = CreateModel(entity);
+
             _context.SoftwareRecords.Remove(entity);
             _context.SaveChanges();
 

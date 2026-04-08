@@ -105,7 +105,6 @@ namespace MolServiceBusinessLogic.Implements
                             Quantity = 1,
                             Description = item.Account ?? string.Empty,
                             Location = location,
-                            Cost = 0,
                             MaterialResponsiblePersonId = materialResponsiblePerson.Id
                         });
 
@@ -122,7 +121,6 @@ namespace MolServiceBusinessLogic.Implements
                             Quantity = 1,
                             Description = item.Account ?? string.Empty,
                             Location = location,
-                            Cost = existingMaterialTechnicalValue.Cost,
                             MaterialResponsiblePersonId = materialResponsiblePerson.Id
                         });
 

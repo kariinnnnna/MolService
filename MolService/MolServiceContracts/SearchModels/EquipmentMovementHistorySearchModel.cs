@@ -15,5 +15,7 @@ namespace MolServiceContracts.SearchModels
         public DateTime? MoveDateTo { get; set; }
 
         public int? MaterialTechnicalValueId { get; set; }
+
+        public string? ReasonContains { get; set; }
     }
 }

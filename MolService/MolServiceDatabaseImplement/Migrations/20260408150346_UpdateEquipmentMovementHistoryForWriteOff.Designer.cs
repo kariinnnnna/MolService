@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MolServiceDatabaseImplement.Migrations
 {
     [DbContext(typeof(MOLServiceDatabase))]
-    [Migration("20260405175035_MakeClassroomOptional")]
-    partial class MakeClassroomOptional
+    [Migration("20260408150346_UpdateEquipmentMovementHistoryForWriteOff")]
+    partial class UpdateEquipmentMovementHistoryForWriteOff
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,11 +71,19 @@ namespace MolServiceDatabaseImplement.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
                     b.Property<int>("MaterialTechnicalValueId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("MoveDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Reason")
                         .IsRequired()
@@ -158,6 +166,9 @@ namespace MolServiceDatabaseImplement.Migrations
 
                     b.Property<int>("MaterialResponsiblePersonId")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

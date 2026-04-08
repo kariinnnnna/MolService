@@ -30,6 +30,24 @@ namespace MolServiceRestApi.Controllers
             }
         }
 
+        [HttpGet("{materialTechnicalValueId}")]
+        public IActionResult GetByMaterialTechnicalValue(int materialTechnicalValueId)
+        {
+            try
+            {
+                var result = _logic.ReadList(new EquipmentMovementHistorySearchModel
+                {
+                    MaterialTechnicalValueId = materialTechnicalValueId
+                });
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost]
         public IActionResult GetFiltered([FromBody] EquipmentMovementHistorySearchModel model)
         {
@@ -49,7 +67,9 @@ namespace MolServiceRestApi.Controllers
             try
             {
                 var result = _logic.ReadElement(model);
-                return result == null ? NotFound("Перемещение оборудования не найдено") : Ok(result);
+                return result == null
+                    ? NotFound("Запись списания оборудования не найдена")
+                    : Ok(result);
             }
             catch (Exception ex)
             {
@@ -62,11 +82,21 @@ namespace MolServiceRestApi.Controllers
         {
             try
             {
-                return Ok(_logic.Create(model));
+                var result = _logic.Create(model);
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                var message = ex.Message;
+                var inner = ex.InnerException;
+
+                while (inner != null)
+                {
+                    message += " | INNER: " + inner.Message;
+                    inner = inner.InnerException;
+                }
+
+                return BadRequest(message);
             }
         }
 
@@ -75,7 +105,8 @@ namespace MolServiceRestApi.Controllers
         {
             try
             {
-                return Ok(_logic.Update(model));
+                var result = _logic.Update(model);
+                return Ok(result);
             }
             catch (Exception ex)
             {

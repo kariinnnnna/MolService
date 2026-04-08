@@ -3,21 +3,20 @@ using MolServiceContracts.BusinessLogicContracts;
 using MolServiceContracts.SearchModels;
 using MolServiceContracts.StorageContracts;
 using MolServiceContracts.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MolServiceBusinessLogic.Implements
 {
     public class EquipmentMovementHistoryLogic : IEquipmentMovementHistoryLogic
     {
         private readonly IEquipmentMovementHistoryStorage _storage;
+        private readonly IMaterialTechnicalValueStorage _materialTechnicalValueStorage;
 
-        public EquipmentMovementHistoryLogic(IEquipmentMovementHistoryStorage storage)
+        public EquipmentMovementHistoryLogic(
+            IEquipmentMovementHistoryStorage storage,
+            IMaterialTechnicalValueStorage materialTechnicalValueStorage)
         {
             _storage = storage;
+            _materialTechnicalValueStorage = materialTechnicalValueStorage;
         }
 
         public List<EquipmentMovementHistoryViewModel>? ReadList(EquipmentMovementHistorySearchModel? model)
@@ -44,12 +43,59 @@ namespace MolServiceBusinessLogic.Implements
                 throw new ArgumentNullException(nameof(model));
             }
 
-            if (model.MoveDate == null)
+            if (model.MaterialTechnicalValueId <= 0)
             {
-                throw new ArgumentException("Не указана дата перемещения оборудования");
+                throw new ArgumentException("Не указано оборудование для списания");
             }
 
-            return _storage.Insert(model);
+            if (model.MoveDate == default)
+            {
+                throw new ArgumentException("Не указана дата списания оборудования");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Reason))
+            {
+                throw new ArgumentException("Не указана причина списания оборудования");
+            }
+
+            if (model.Quantity <= 0)
+            {
+                throw new ArgumentException("Количество для списания должно быть больше 0");
+            }
+
+            var materialTechnicalValue = _materialTechnicalValueStorage.GetElement(
+                new MaterialTechnicalValueSearchModel
+                {
+                    Id = model.MaterialTechnicalValueId
+                });
+
+            if (materialTechnicalValue == null)
+            {
+                throw new InvalidOperationException("Оборудование не найдено");
+            }
+
+            if (model.Quantity > materialTechnicalValue.Quantity)
+            {
+                throw new ArgumentException("Нельзя списать больше, чем есть в наличии");
+            }
+
+            var result = _storage.Insert(model);
+
+            var updateModel = new MaterialTechnicalValueBindingModel
+            {
+                Id = materialTechnicalValue.Id,
+                InventoryNumber = materialTechnicalValue.InventoryNumber,
+                ClassroomId = materialTechnicalValue.ClassroomId,
+                FullName = materialTechnicalValue.FullName,
+                Quantity = materialTechnicalValue.Quantity - model.Quantity,
+                Description = materialTechnicalValue.Description,
+                Location = materialTechnicalValue.Location,
+                MaterialResponsiblePersonId = materialTechnicalValue.MaterialResponsiblePersonId
+            };
+
+            _materialTechnicalValueStorage.Update(updateModel);
+
+            return result;
         }
 
         public EquipmentMovementHistoryViewModel? Update(EquipmentMovementHistoryBindingModel model)
@@ -61,7 +107,27 @@ namespace MolServiceBusinessLogic.Implements
 
             if (model.Id <= 0)
             {
-                throw new ArgumentException("Не указан идентификатор перемещения оборудования");
+                throw new ArgumentException("Не указан идентификатор записи списания");
+            }
+
+            if (model.MaterialTechnicalValueId <= 0)
+            {
+                throw new ArgumentException("Не указано оборудование");
+            }
+
+            if (model.MoveDate == default)
+            {
+                throw new ArgumentException("Не указана дата списания оборудования");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Reason))
+            {
+                throw new ArgumentException("Не указана причина списания оборудования");
+            }
+
+            if (model.Quantity <= 0)
+            {
+                throw new ArgumentException("Количество для списания должно быть больше 0");
             }
 
             var element = _storage.GetElement(new EquipmentMovementHistorySearchModel
@@ -71,7 +137,7 @@ namespace MolServiceBusinessLogic.Implements
 
             if (element == null)
             {
-                throw new InvalidOperationException("Перемещение оборудования не найдено");
+                throw new InvalidOperationException("Запись списания не найдена");
             }
 
             return _storage.Update(model);
@@ -86,7 +152,7 @@ namespace MolServiceBusinessLogic.Implements
 
             if (model.Id <= 0)
             {
-                throw new ArgumentException("Не указан идентификатор перемещения оборудования");
+                throw new ArgumentException("Не указан идентификатор записи списания");
             }
 
             var element = _storage.GetElement(new EquipmentMovementHistorySearchModel
@@ -96,7 +162,7 @@ namespace MolServiceBusinessLogic.Implements
 
             if (element == null)
             {
-                throw new InvalidOperationException("Перемещение оборудования не найдено");
+                throw new InvalidOperationException("Запись списания не найдена");
             }
 
             return _storage.Delete(model) != null;

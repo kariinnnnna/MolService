@@ -50,9 +50,9 @@ namespace MolServiceDatabaseImplement
                 entity.HasKey(x => x.Id);
                 entity.Property(x => x.InventoryNumber).IsRequired().HasMaxLength(100);
                 entity.Property(x => x.FullName).IsRequired().HasMaxLength(200);
+                entity.Property(x => x.Quantity).IsRequired().HasColumnType("decimal(18,2)");
                 entity.Property(x => x.Description).HasMaxLength(1000);
                 entity.Property(x => x.Location).HasMaxLength(200);
-                entity.Property(x => x.Cost).IsRequired().HasColumnType("decimal(18,2)");
 
                 entity.HasOne(x => x.Classroom)
                     .WithMany(x => x.MaterialTechnicalValues)
@@ -80,8 +80,12 @@ namespace MolServiceDatabaseImplement
             {
                 entity.ToTable("software_records");
                 entity.HasKey(x => x.Id);
+
                 entity.Property(x => x.SetupDescription).HasMaxLength(1000);
                 entity.Property(x => x.ClaimNumber).HasMaxLength(200);
+
+                entity.HasIndex(x => new { x.MaterialTechnicalValueId, x.SoftwareId })
+                    .IsUnique();
 
                 entity.HasOne(x => x.MaterialTechnicalValue)
                     .WithMany(x => x.SoftwareRecords)
@@ -98,8 +102,14 @@ namespace MolServiceDatabaseImplement
             {
                 entity.ToTable("equipment_movement_histories");
                 entity.HasKey(x => x.Id);
-                entity.Property(x => x.MoveDate).IsRequired();
-                entity.Property(x => x.Reason).HasMaxLength(1000);
+
+                entity.Property(x => x.MoveDate)
+                    .IsRequired()
+                    .HasColumnType("timestamp without time zone");
+
+                entity.Property(x => x.Reason).IsRequired().HasMaxLength(1000);
+                entity.Property(x => x.Quantity).IsRequired().HasColumnType("decimal(18,2)");
+                entity.Property(x => x.Comment).HasMaxLength(1000);
 
                 entity.HasOne(x => x.MaterialTechnicalValue)
                     .WithMany(x => x.EquipmentMovementHistories)
