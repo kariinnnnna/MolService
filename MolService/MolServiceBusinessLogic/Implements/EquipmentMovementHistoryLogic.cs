@@ -81,13 +81,15 @@ namespace MolServiceBusinessLogic.Implements
 
             var result = _storage.Insert(model);
 
+            var newQuantity = materialTechnicalValue.Quantity - model.Quantity;
+
             var updateModel = new MaterialTechnicalValueBindingModel
             {
                 Id = materialTechnicalValue.Id,
                 InventoryNumber = materialTechnicalValue.InventoryNumber,
-                ClassroomId = materialTechnicalValue.ClassroomId,
+                ClassroomId = newQuantity == 0 ? null : materialTechnicalValue.ClassroomId,
                 FullName = materialTechnicalValue.FullName,
-                Quantity = materialTechnicalValue.Quantity - model.Quantity,
+                Quantity = newQuantity,
                 Description = materialTechnicalValue.Description,
                 Location = materialTechnicalValue.Location,
                 MaterialResponsiblePersonId = materialTechnicalValue.MaterialResponsiblePersonId
