@@ -22,10 +22,12 @@ namespace MolServiceContracts.BindingModels
         [Display(Name = "Должность")]
         public string Position { get; set; } = string.Empty;
 
+        [Phone(ErrorMessage = "Некорректный формат телефона")]
         [StringLength(30, ErrorMessage = "Телефон не должен превышать 30 символов")]
         [Display(Name = "Телефон")]
         public string Phone { get; set; } = string.Empty;
 
+        [EmailAddress(ErrorMessage = "Некорректный формат email")]
         [StringLength(150, ErrorMessage = "Email не должен превышать 150 символов")]
         [Display(Name = "Email")]
         public string Email { get; set; } = string.Empty;

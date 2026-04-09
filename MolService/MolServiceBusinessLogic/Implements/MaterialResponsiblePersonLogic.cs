@@ -44,20 +44,9 @@ namespace MolServiceBusinessLogic.Implements
                 throw new ArgumentNullException(nameof(model));
             }
 
-            if (string.IsNullOrWhiteSpace(model.FullName))
-            {
-                throw new ArgumentException("Не указано полное имя ответственного лица");
-            }
+            ValidateModel(model);
 
-            var existingPerson = _storage.GetElement(new MaterialResponsiblePersonSearchModel
-            {
-                FullName = model.FullName
-            });
-
-            if (existingPerson != null)
-            {
-                throw new InvalidOperationException("Ответственное лицо с таким именем уже существует");
-            }
+            CheckDuplicates(model);
 
             return _storage.Insert(model);
         }
@@ -74,10 +63,7 @@ namespace MolServiceBusinessLogic.Implements
                 throw new ArgumentException("Не указан идентификатор ответственного лица");
             }
 
-            if (string.IsNullOrWhiteSpace(model.FullName))
-            {
-                throw new ArgumentException("Не указано полное имя ответственного лица");
-            }
+            ValidateModel(model);
 
             var element = _storage.GetElement(new MaterialResponsiblePersonSearchModel
             {
@@ -88,6 +74,8 @@ namespace MolServiceBusinessLogic.Implements
             {
                 throw new InvalidOperationException("Ответственное лицо не найдено");
             }
+
+            CheckDuplicates(model);
 
             return _storage.Update(model);
         }
@@ -115,6 +103,65 @@ namespace MolServiceBusinessLogic.Implements
             }
 
             return _storage.Delete(model) != null;
+        }
+
+        private static void ValidateModel(MaterialResponsiblePersonBindingModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.FullName))
+            {
+                throw new ArgumentException("Не указано полное имя ответственного лица");
+            }
+
+            model.FullName = model.FullName.Trim();
+
+            if (!string.IsNullOrWhiteSpace(model.Phone))
+            {
+                model.Phone = model.Phone.Trim();
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.Email))
+            {
+                model.Email = model.Email.Trim();
+            }
+        }
+
+        private void CheckDuplicates(MaterialResponsiblePersonBindingModel model)
+        {
+            var sameFullName = _storage.GetElement(new MaterialResponsiblePersonSearchModel
+            {
+                FullName = model.FullName
+            });
+
+            if (sameFullName != null && sameFullName.Id != model.Id)
+            {
+                throw new InvalidOperationException("Ответственное лицо с таким ФИО уже существует");
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.Phone))
+            {
+                var samePhone = _storage.GetElement(new MaterialResponsiblePersonSearchModel
+                {
+                    Phone = model.Phone
+                });
+
+                if (samePhone != null && samePhone.Id != model.Id)
+                {
+                    throw new InvalidOperationException("Ответственное лицо с таким телефоном уже существует");
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.Email))
+            {
+                var sameEmail = _storage.GetElement(new MaterialResponsiblePersonSearchModel
+                {
+                    Email = model.Email
+                });
+
+                if (sameEmail != null && sameEmail.Id != model.Id)
+                {
+                    throw new InvalidOperationException("Ответственное лицо с таким email уже существует");
+                }
+            }
         }
     }
 }
