@@ -20,5 +20,8 @@ namespace MolServiceContracts.BusinessLogicContracts
         SoftwareRecordViewModel? Update(SoftwareRecordBindingModel model);
 
         bool Delete(SoftwareRecordBindingModel model);
+
+        SoftwareAssignToClassroomResultViewModel AssignToClassroom(SoftwareAssignToClassroomBindingModel model);
+
     }
 }

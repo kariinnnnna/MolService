@@ -9,9 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MolServiceContracts", "MolS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MolServiceDatabaseImplement", "MolServiceDatabaseImplement\MolServiceDatabaseImplement.csproj", "{2156CC97-596D-4C5C-9CBB-7710916FCB04}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MolServiceRestApi", "MolServiceRestApi\MolServiceRestApi.csproj", "{57E3F5C4-D307-44CA-B07B-C2F9F67F19D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MolServiceRestApi", "MolServiceRestApi\MolServiceRestApi.csproj", "{57E3F5C4-D307-44CA-B07B-C2F9F67F19D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MolServiceBusinessLogic", "MolServiceBusinessLogic\MolServiceBusinessLogic.csproj", "{CD5DE32C-DB9F-45D5-9936-4CABA4DAD52F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MolServiceBusinessLogic", "MolServiceBusinessLogic\MolServiceBusinessLogic.csproj", "{CD5DE32C-DB9F-45D5-9936-4CABA4DAD52F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MolServiceTest", "MolServiceTest\MolServiceTest.csproj", "{5F3919BB-67C9-4088-84A2-AF4667BE78F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{CD5DE32C-DB9F-45D5-9936-4CABA4DAD52F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD5DE32C-DB9F-45D5-9936-4CABA4DAD52F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD5DE32C-DB9F-45D5-9936-4CABA4DAD52F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F3919BB-67C9-4088-84A2-AF4667BE78F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F3919BB-67C9-4088-84A2-AF4667BE78F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F3919BB-67C9-4088-84A2-AF4667BE78F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F3919BB-67C9-4088-84A2-AF4667BE78F7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

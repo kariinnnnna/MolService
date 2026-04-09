@@ -14,17 +14,19 @@ namespace MolServiceBusinessLogic.Implements
     public class SoftwareRecordLogic : ISoftwareRecordLogic
     {
         private readonly ISoftwareRecordStorage _storage;
+        private readonly IMaterialTechnicalValueStorage _materialTechnicalValueStorage;
 
-        public SoftwareRecordLogic(ISoftwareRecordStorage storage)
+        public SoftwareRecordLogic(
+            ISoftwareRecordStorage storage,
+            IMaterialTechnicalValueStorage materialTechnicalValueStorage)
         {
             _storage = storage;
+            _materialTechnicalValueStorage = materialTechnicalValueStorage;
         }
 
         public List<SoftwareRecordViewModel>? ReadList(SoftwareRecordSearchModel? model)
         {
-            return model == null
-                ? _storage.GetFullList()
-                : _storage.GetFilteredList(model);
+            return model == null ? _storage.GetFullList() : _storage.GetFilteredList(model);
         }
 
         public SoftwareRecordViewModel? ReadElement(SoftwareRecordSearchModel model)
@@ -137,6 +139,76 @@ namespace MolServiceBusinessLogic.Implements
             }
 
             return _storage.Delete(model) != null;
+        }
+
+        public SoftwareAssignToClassroomResultViewModel AssignToClassroom(SoftwareAssignToClassroomBindingModel model)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            if (model.ClassroomId <= 0)
+            {
+                throw new ArgumentException("Не указана аудитория");
+            }
+
+            if (model.SoftwareId <= 0)
+            {
+                throw new ArgumentException("Не указано программное обеспечение");
+            }
+
+            var equipmentList = _materialTechnicalValueStorage.GetFilteredList(
+                new MaterialTechnicalValueSearchModel
+                {
+                    ClassroomId = model.ClassroomId
+                }) ?? new List<MaterialTechnicalValueViewModel>();
+
+            if (!equipmentList.Any())
+            {
+                throw new InvalidOperationException("В выбранной аудитории нет оборудования");
+            }
+
+            var result = new SoftwareAssignToClassroomResultViewModel
+            {
+                ClassroomId = model.ClassroomId,
+                SoftwareId = model.SoftwareId,
+                FoundEquipmentCount = equipmentList.Count
+            };
+
+            foreach (var equipment in equipmentList)
+            {
+                try
+                {
+                    var duplicate = _storage.GetElement(new SoftwareRecordSearchModel
+                    {
+                        MaterialTechnicalValueId = equipment.Id,
+                        SoftwareId = model.SoftwareId
+                    });
+
+                    if (duplicate != null)
+                    {
+                        result.SkippedDuplicatesCount++;
+                        continue;
+                    }
+
+                    _storage.Insert(new SoftwareRecordBindingModel
+                    {
+                        MaterialTechnicalValueId = equipment.Id,
+                        SoftwareId = model.SoftwareId,
+                        SetupDescription = model.SetupDescription?.Trim() ?? string.Empty,
+                        ClaimNumber = model.ClaimNumber?.Trim() ?? string.Empty
+                    });
+
+                    result.CreatedCount++;
+                }
+                catch (Exception ex)
+                {
+                    result.Errors.Add($"{equipment.FullName} ({equipment.InventoryNumber}): {ex.Message}");
+                }
+            }
+
+            return result;
         }
     }
 }

@@ -95,5 +95,17 @@ namespace MolServiceRestApi.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        [HttpPost]
+        public IActionResult AssignToClassroom([FromBody] SoftwareAssignToClassroomBindingModel model)
+        {
+            try
+            {
+                return Ok(_logic.AssignToClassroom(model));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
