@@ -49,7 +49,14 @@ namespace MolServiceBusinessLogic.Implements
 
             var response = await _oneCApiService.GetInventoryAsync(model.Username, model.Password);
 
-            foreach (var item in response.Items)
+            var itemsToImport = response.Items
+                .Where(x => string.Equals(
+                    ParseMolWithLocation(x.MolWithLocation).Location?.Trim(),
+                    "Кафедра ИС",
+                    StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            foreach (var item in itemsToImport)
             {
                 result.ImportedCount++;
 

@@ -49,6 +49,8 @@ namespace MolServiceBusinessLogic.Implements
                 throw new ArgumentException("Не указан инвентарный номер");
             }
 
+            model.Location = "Кафедра ИС";
+
             var existingByInventoryNumber = _storage.GetElement(new MaterialTechnicalValueSearchModel
             {
                 InventoryNumber = model.InventoryNumber
@@ -88,6 +90,8 @@ namespace MolServiceBusinessLogic.Implements
             {
                 throw new InvalidOperationException("Оборудование не найдено");
             }
+
+            model.Location = "Кафедра ИС";
 
             return _storage.Update(model);
         }

@@ -1,6 +1,7 @@
 ﻿using MolServiceContracts.BindingModels;
 using MolServiceContracts.SearchModels;
 using MolServiceContracts.ViewModels;
+using MolServiceContracts.ViewModels.Reports;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,5 +23,7 @@ namespace MolServiceContracts.StorageContracts
         MaterialTechnicalValueViewModel? Update(MaterialTechnicalValueBindingModel model);
 
         MaterialTechnicalValueViewModel? Delete(MaterialTechnicalValueBindingModel model);
+        List<InventoryReportItemViewModel> GetInventoryReportItems();
+        List<InventoryReportItemViewModel> GetInventoryReportItemsByClassroomIds(List<int> classroomIds);
     }
 }

@@ -3,6 +3,7 @@ using MolServiceContracts.BindingModels;
 using MolServiceContracts.SearchModels;
 using MolServiceContracts.StorageContracts;
 using MolServiceContracts.ViewModels;
+using MolServiceContracts.ViewModels.Reports;
 using MolServiceDatabaseImplement.Models;
 using System;
 using System.Collections.Generic;
@@ -159,6 +160,53 @@ namespace MolServiceDatabaseImplement.Implements
                 MaterialResponsiblePersonId = entity.MaterialResponsiblePersonId,
                 MaterialResponsiblePersonName = entity.MaterialResponsiblePerson?.FullName ?? string.Empty
             };
+        }
+        public List<InventoryReportItemViewModel> GetInventoryReportItems()
+        {
+            return _context.MaterialTechnicalValues
+                .Include(x => x.Classroom)
+                .Include(x => x.MaterialResponsiblePerson)
+                .Select(x => new InventoryReportItemViewModel
+                {
+                    InventoryNumber = x.InventoryNumber,
+                    FullName = x.FullName,
+                    Quantity = x.Quantity,
+                    Description = x.Description,
+                    Location = x.Location,
+                    ClassroomId = x.ClassroomId,
+                    ClassroomNumber = x.Classroom != null ? x.Classroom.Number : string.Empty,
+                    MaterialResponsiblePersonId = x.MaterialResponsiblePersonId,
+                    MaterialResponsiblePersonName = x.MaterialResponsiblePerson != null
+                        ? x.MaterialResponsiblePerson.FullName
+                        : string.Empty
+                })
+                .OrderBy(x => x.ClassroomNumber)
+                .ThenBy(x => x.FullName)
+                .ToList();
+        }
+        public List<InventoryReportItemViewModel> GetInventoryReportItemsByClassroomIds(List<int> classroomIds)
+        {
+            return _context.MaterialTechnicalValues
+                .Include(x => x.Classroom)
+                .Include(x => x.MaterialResponsiblePerson)
+                .Where(x => x.ClassroomId.HasValue && classroomIds.Contains(x.ClassroomId.Value))
+                .Select(x => new InventoryReportItemViewModel
+                {
+                    InventoryNumber = x.InventoryNumber,
+                    FullName = x.FullName,
+                    Quantity = x.Quantity,
+                    Description = x.Description,
+                    Location = x.Location,
+                    ClassroomId = x.ClassroomId,
+                    ClassroomNumber = x.Classroom != null ? x.Classroom.Number : string.Empty,
+                    MaterialResponsiblePersonId = x.MaterialResponsiblePersonId,
+                    MaterialResponsiblePersonName = x.MaterialResponsiblePerson != null
+                        ? x.MaterialResponsiblePerson.FullName
+                        : string.Empty
+                })
+                .OrderBy(x => x.ClassroomNumber)
+                .ThenBy(x => x.FullName)
+                .ToList();
         }
     }
 }

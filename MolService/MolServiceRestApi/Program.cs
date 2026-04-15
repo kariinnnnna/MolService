@@ -39,6 +39,7 @@ builder.Services.AddHttpClient<OneCApiService>();
 builder.Services.AddTransient<IOneCImportLogic, OneCImportLogic>();
 builder.Services.AddHttpClient<CoreApiService>();
 builder.Services.AddTransient<ICoreClassroomImportLogic, CoreClassroomImportLogic>();
+builder.Services.AddScoped<IInventoryReportLogic, InventoryReportLogic>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
