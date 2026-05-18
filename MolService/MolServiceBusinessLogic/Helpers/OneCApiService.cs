@@ -13,19 +13,46 @@ namespace MolServiceBusinessLogic.Helpers
     {
         private readonly HttpClient _httpClient;
 
-        private const string InventoryUrl = "http://172.20.1.61/bgu_new/hs/BGU_OS_Data/inventoryNumbers";
+        private const string InventoryUrl =
+            "http://172.20.1.61/bgu_new/hs/BGU_OS_Data/inventoryNumbers";
+
+        private const string MaterialStocksUrl =
+            "http://172.20.1.61/bgu_new/hs/BGU_OS_Data/matzp";
 
         public OneCApiService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
 
-        public async Task<OneCInventoryResponse> GetInventoryAsync(string username, string password)
+        public async Task<OneCInventoryResponse> GetInventoryAsync(
+            string username,
+            string password)
+        {
+            return await SendOneCRequestAsync<OneCInventoryResponse>(
+                InventoryUrl,
+                username,
+                password);
+        }
+
+        public async Task<OneCMaterialStockResponse> GetMaterialStocksAsync(
+            string username,
+            string password)
+        {
+            return await SendOneCRequestAsync<OneCMaterialStockResponse>(
+                MaterialStocksUrl,
+                username,
+                password);
+        }
+
+        private async Task<T> SendOneCRequestAsync<T>(
+            string url,
+            string username,
+            string password)
         {
             var credentials = Convert.ToBase64String(
                 Encoding.UTF8.GetBytes($"{username}:{password}"));
 
-            using var request = new HttpRequestMessage(HttpMethod.Get, InventoryUrl);
+            using var request = new HttpRequestMessage(HttpMethod.Get, url);
 
             request.Headers.Authorization =
                 new AuthenticationHeaderValue("Basic", credentials);
@@ -38,7 +65,8 @@ namespace MolServiceBusinessLogic.Helpers
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception($"Ошибка запроса к 1С: {(int)response.StatusCode}. {content}");
+                throw new Exception(
+                    $"Ошибка запроса к 1С: {(int)response.StatusCode}. {content}");
             }
 
             var options = new JsonSerializerOptions
@@ -46,7 +74,7 @@ namespace MolServiceBusinessLogic.Helpers
                 PropertyNameCaseInsensitive = true
             };
 
-            var result = JsonSerializer.Deserialize<OneCInventoryResponse>(content, options);
+            var result = JsonSerializer.Deserialize<T>(content, options);
 
             if (result == null)
             {
@@ -57,3 +85,4 @@ namespace MolServiceBusinessLogic.Helpers
         }
     }
 }
+

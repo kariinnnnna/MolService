@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MolServiceDataModels.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,8 @@ namespace MolServiceDataModels.Models
         decimal Quantity { get; }
         string Description { get; }
         string Location { get; }
+        MaterialTechnicalValueSourceType SourceType { get; }
+        string ExternalKey { get; }
         int MaterialResponsiblePersonId { get; }
     }
 }

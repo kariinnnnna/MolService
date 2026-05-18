@@ -20,5 +20,6 @@ namespace MolServiceContracts.BusinessLogicContracts
         MaterialTechnicalValueViewModel? Update(MaterialTechnicalValueBindingModel model);
 
         bool Delete(MaterialTechnicalValueBindingModel model);
+        PagedResultViewModel<MaterialTechnicalValueViewModel> ReadPagedList(MaterialTechnicalValueSearchModel model);
     }
 }

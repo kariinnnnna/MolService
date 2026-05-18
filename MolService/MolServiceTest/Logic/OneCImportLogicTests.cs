@@ -4,13 +4,10 @@ using MolServiceContracts.BindingModels;
 using MolServiceContracts.SearchModels;
 using MolServiceContracts.StorageContracts;
 using MolServiceContracts.ViewModels;
+using MolServiceDataModels.Enums;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace MolServiceTest.Logic
 {
@@ -24,10 +21,11 @@ namespace MolServiceTest.Logic
     {
       ""ОсновноеСредствоНаименование"": ""Ноутбук Dell"",
       ""ИнвентарныйНомер"": ""INV-777"",
-      ""ЦМОНаименование"": ""Петров П.П. - Лаборатория 12"",
+      ""ЦМОНаименование"": ""Петров П.П. - Кафедра ИС"",
       ""СчетУчета"": ""101.34""
     }
-  ]
+  ],
+  ""МатериальныеЗапасы"": []
 }";
 
             var httpClient = CreateHttpClient(responseJson);
@@ -37,11 +35,13 @@ namespace MolServiceTest.Logic
             var mrpStorageMock = new Mock<IMaterialResponsiblePersonStorage>();
 
             mrpStorageMock
-                .Setup(x => x.GetElement(It.Is<MaterialResponsiblePersonSearchModel>(m => m.FullName == "Петров П.П.")))
+                .Setup(x => x.GetElement(It.Is<MaterialResponsiblePersonSearchModel>(
+                    m => m.FullName == "Петров П.П.")))
                 .Returns((MaterialResponsiblePersonViewModel?)null);
 
             mrpStorageMock
-                .Setup(x => x.Insert(It.Is<MaterialResponsiblePersonBindingModel>(m => m.FullName == "Петров П.П.")))
+                .Setup(x => x.Insert(It.Is<MaterialResponsiblePersonBindingModel>(
+                    m => m.FullName == "Петров П.П.")))
                 .Returns(new MaterialResponsiblePersonViewModel
                 {
                     Id = 11,
@@ -49,10 +49,20 @@ namespace MolServiceTest.Logic
                 });
 
             mtvStorageMock
-                .Setup(x => x.GetElement(It.Is<MaterialTechnicalValueSearchModel>(m => m.InventoryNumber == "INV-777")))
+                .Setup(x => x.GetElement(It.Is<MaterialTechnicalValueSearchModel>(
+                    m => m.ExternalKey == "inventoryNumbers:inv-777")))
                 .Returns((MaterialTechnicalValueViewModel?)null);
 
-            var logic = new OneCImportLogic(oneCApiService, mtvStorageMock.Object, mrpStorageMock.Object);
+            mtvStorageMock
+                .Setup(x => x.GetElement(It.Is<MaterialTechnicalValueSearchModel>(
+                    m => m.InventoryNumber == "INV-777" &&
+                         m.SourceType == MaterialTechnicalValueSourceType.FixedAsset)))
+                .Returns((MaterialTechnicalValueViewModel?)null);
+
+            var logic = new OneCImportLogic(
+                oneCApiService,
+                mtvStorageMock.Object,
+                mrpStorageMock.Object);
 
             var result = await logic.ImportFromOneCAsync(new OneCImportBindingModel
             {
@@ -72,9 +82,11 @@ namespace MolServiceTest.Logic
                 m.InventoryNumber == "INV-777" &&
                 m.FullName == "Ноутбук Dell" &&
                 m.Description == "101.34" &&
-                m.Location == "Лаборатория 12" &&
-                m.Quantity == 1 &&
-                m.MaterialResponsiblePersonId == 11)), Times.Once);
+                m.Location == "Кафедра ИС" &&
+                m.Quantity == 1m &&
+                m.MaterialResponsiblePersonId == 11 &&
+                m.SourceType == MaterialTechnicalValueSourceType.FixedAsset &&
+                m.ExternalKey == "inventoryNumbers:inv-777")), Times.Once);
         }
 
         [Fact]
@@ -85,16 +97,17 @@ namespace MolServiceTest.Logic
     {
       ""ОсновноеСредствоНаименование"": ""Проектор Epson"",
       ""ИнвентарныйНомер"": ""INV-500"",
-      ""ЦМОНаименование"": ""Иванова И.И. - Аудитория 401"",
+      ""ЦМОНаименование"": ""Иванова И.И. - Кафедра ИС"",
       ""СчетУчета"": ""101.36""
     },
     {
       ""ОсновноеСредствоНаименование"": """",
       ""ИнвентарныйНомер"": ""INV-ERROR"",
-      ""ЦМОНаименование"": ""Некто - Склад"",
+      ""ЦМОНаименование"": ""Некто - Кафедра ИС"",
       ""СчетУчета"": ""101.99""
     }
-  ]
+  ],
+  ""МатериальныеЗапасы"": []
 }";
 
             var httpClient = CreateHttpClient(responseJson);
@@ -104,7 +117,8 @@ namespace MolServiceTest.Logic
             var mrpStorageMock = new Mock<IMaterialResponsiblePersonStorage>();
 
             mrpStorageMock
-                .Setup(x => x.GetElement(It.Is<MaterialResponsiblePersonSearchModel>(m => m.FullName == "Иванова И.И.")))
+                .Setup(x => x.GetElement(It.Is<MaterialResponsiblePersonSearchModel>(
+                    m => m.FullName == "Иванова И.И.")))
                 .Returns(new MaterialResponsiblePersonViewModel
                 {
                     Id = 15,
@@ -112,20 +126,32 @@ namespace MolServiceTest.Logic
                 });
 
             mtvStorageMock
-                .Setup(x => x.GetElement(It.Is<MaterialTechnicalValueSearchModel>(m => m.InventoryNumber == "INV-500")))
+                .Setup(x => x.GetElement(It.Is<MaterialTechnicalValueSearchModel>(
+                    m => m.ExternalKey == "inventoryNumbers:inv-500")))
+                .Returns((MaterialTechnicalValueViewModel?)null);
+
+            mtvStorageMock
+                .Setup(x => x.GetElement(It.Is<MaterialTechnicalValueSearchModel>(
+                    m => m.InventoryNumber == "INV-500" &&
+                         m.SourceType == MaterialTechnicalValueSourceType.FixedAsset)))
                 .Returns(new MaterialTechnicalValueViewModel
                 {
                     Id = 20,
                     InventoryNumber = "INV-500",
                     ClassroomId = 3,
                     FullName = "Старое имя",
-                    Quantity = 1,
+                    Quantity = 1m,
                     Description = "Старое описание",
                     Location = "Старое место",
-                    MaterialResponsiblePersonId = 4
+                    MaterialResponsiblePersonId = 4,
+                    SourceType = MaterialTechnicalValueSourceType.FixedAsset,
+                    ExternalKey = "inventoryNumbers:inv-500"
                 });
 
-            var logic = new OneCImportLogic(oneCApiService, mtvStorageMock.Object, mrpStorageMock.Object);
+            var logic = new OneCImportLogic(
+                oneCApiService,
+                mtvStorageMock.Object,
+                mrpStorageMock.Object);
 
             var result = await logic.ImportFromOneCAsync(new OneCImportBindingModel
             {
@@ -145,9 +171,11 @@ namespace MolServiceTest.Logic
                 m.InventoryNumber == "INV-500" &&
                 m.FullName == "Проектор Epson" &&
                 m.Description == "101.36" &&
-                m.Location == "Аудитория 401" &&
+                m.Location == "Кафедра ИС" &&
                 m.MaterialResponsiblePersonId == 15 &&
-                m.Quantity == 1)), Times.Once);
+                m.Quantity == 1m &&
+                m.SourceType == MaterialTechnicalValueSourceType.FixedAsset &&
+                m.ExternalKey == "inventoryNumbers:inv-500")), Times.Once);
         }
 
         private static HttpClient CreateHttpClient(string json)
@@ -176,6 +204,132 @@ namespace MolServiceTest.Logic
 
                 return Task.FromResult(response);
             }
+        }
+        [Fact]
+        public async Task ImportFromOneCAsync_ShouldCreateMaterialStock_WhenMolExistsInDepartment()
+        {
+            var responseJson = @"{
+  ""ОС"": [
+    {
+      ""ОсновноеСредствоНаименование"": ""Компьютер"",
+      ""ИнвентарныйНомер"": ""INV-100"",
+      ""ЦМОНаименование"": ""Иванов И.И. - Кафедра ИС"",
+      ""СчетУчета"": ""101.34""
+    }
+  ],
+  ""МатериальныеЗапасы"": [
+    {
+      ""Номенклатура"": ""Картридж"",
+      ""НоменклатураКод"": ""MAT-001"",
+      ""Количество"": 3,
+      ""МОЛ"": ""Иванов Иван Иванович""
+    }
+  ]
+}";
+
+            var httpClient = CreateHttpClient(responseJson);
+            var oneCApiService = new OneCApiService(httpClient);
+
+            var mtvStorageMock = new Mock<IMaterialTechnicalValueStorage>();
+            var mrpStorageMock = new Mock<IMaterialResponsiblePersonStorage>();
+
+            mrpStorageMock
+                .Setup(x => x.GetElement(It.Is<MaterialResponsiblePersonSearchModel>(
+                    m => m.FullName == "Иванов И.И.")))
+                .Returns(new MaterialResponsiblePersonViewModel
+                {
+                    Id = 5,
+                    FullName = "Иванов И.И."
+                });
+
+            mtvStorageMock
+                .Setup(x => x.GetElement(It.IsAny<MaterialTechnicalValueSearchModel>()))
+                .Returns((MaterialTechnicalValueViewModel?)null);
+
+            var logic = new OneCImportLogic(
+                oneCApiService,
+                mtvStorageMock.Object,
+                mrpStorageMock.Object);
+
+            var result = await logic.ImportFromOneCAsync(new OneCImportBindingModel
+            {
+                Username = "demo",
+                Password = "demo"
+            });
+
+            Assert.Equal(2, result.ImportedCount);
+            Assert.Equal(2, result.CreatedCount);
+            Assert.Equal(0, result.UpdatedCount);
+            Assert.Equal(0, result.ErrorCount);
+
+            mtvStorageMock.Verify(x => x.Insert(It.Is<MaterialTechnicalValueBindingModel>(m =>
+                m.InventoryNumber == "MAT-001" &&
+                m.FullName == "Картридж" &&
+                m.Quantity == 3m &&
+                m.Location == "Кафедра ИС" &&
+                m.MaterialResponsiblePersonId == 5 &&
+                m.SourceType == MaterialTechnicalValueSourceType.MaterialStock &&
+                m.ExternalKey == "matzp:mat-001:иванов|и|и")), Times.Once);
+        }
+        [Fact]
+        public async Task ImportFromOneCAsync_ShouldNotCreateMaterialStock_WhenMolIsNotFromDepartment()
+        {
+            var responseJson = @"{
+  ""ОС"": [
+    {
+      ""ОсновноеСредствоНаименование"": ""Компьютер"",
+      ""ИнвентарныйНомер"": ""INV-100"",
+      ""ЦМОНаименование"": ""Иванов И.И. - Кафедра ИС"",
+      ""СчетУчета"": ""101.34""
+    }
+  ],
+  ""МатериальныеЗапасы"": [
+    {
+      ""Номенклатура"": ""Картридж"",
+      ""НоменклатураКод"": ""MAT-001"",
+      ""Количество"": 3,
+      ""МОЛ"": ""Петров Петр Петрович""
+    }
+  ]
+}";
+
+            var httpClient = CreateHttpClient(responseJson);
+            var oneCApiService = new OneCApiService(httpClient);
+
+            var mtvStorageMock = new Mock<IMaterialTechnicalValueStorage>();
+            var mrpStorageMock = new Mock<IMaterialResponsiblePersonStorage>();
+
+            mrpStorageMock
+                .Setup(x => x.GetElement(It.Is<MaterialResponsiblePersonSearchModel>(
+                    m => m.FullName == "Иванов И.И.")))
+                .Returns(new MaterialResponsiblePersonViewModel
+                {
+                    Id = 5,
+                    FullName = "Иванов И.И."
+                });
+
+            mtvStorageMock
+                .Setup(x => x.GetElement(It.IsAny<MaterialTechnicalValueSearchModel>()))
+                .Returns((MaterialTechnicalValueViewModel?)null);
+
+            var logic = new OneCImportLogic(
+                oneCApiService,
+                mtvStorageMock.Object,
+                mrpStorageMock.Object);
+
+            var result = await logic.ImportFromOneCAsync(new OneCImportBindingModel
+            {
+                Username = "demo",
+                Password = "demo"
+            });
+
+            Assert.Equal(1, result.ImportedCount);
+            Assert.Equal(1, result.CreatedCount);
+            Assert.Equal(0, result.UpdatedCount);
+            Assert.Equal(0, result.ErrorCount);
+
+            mtvStorageMock.Verify(x => x.Insert(It.Is<MaterialTechnicalValueBindingModel>(m =>
+                m.SourceType == MaterialTechnicalValueSourceType.MaterialStock)), Times.Never);
         }
     }
 }

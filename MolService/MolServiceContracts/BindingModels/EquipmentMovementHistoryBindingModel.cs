@@ -23,7 +23,7 @@ namespace MolServiceContracts.BindingModels
         public string Reason { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Количество обязательно")]
-        [Range(typeof(decimal), "0,01", "999999999", ErrorMessage = "Количество должно быть больше 0")]
+
         [Display(Name = "Количество к списанию")]
         public decimal Quantity { get; set; }
 

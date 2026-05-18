@@ -1,4 +1,5 @@
-﻿using MolServiceDataModels.Models;
+﻿using MolServiceDataModels.Enums;
+using MolServiceDataModels.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,9 @@ namespace MolServiceDatabaseImplement.Models
 
 
         public int MaterialResponsiblePersonId { get; set; }
+        public MaterialTechnicalValueSourceType SourceType { get; set; } = MaterialTechnicalValueSourceType.FixedAsset;
+
+        public string ExternalKey { get; set; } = string.Empty;
 
         public virtual Classroom? Classroom { get; set; }
 

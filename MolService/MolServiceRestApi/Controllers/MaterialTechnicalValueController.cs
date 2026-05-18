@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MolServiceContracts.BindingModels;
 using MolServiceContracts.BusinessLogicContracts;
 using MolServiceContracts.SearchModels;
+using MolServiceContracts.ViewModels;
 
 namespace MolServiceRestApi.Controllers
 {
@@ -94,6 +95,11 @@ namespace MolServiceRestApi.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+        [HttpGet]
+        public PagedResultViewModel<MaterialTechnicalValueViewModel> GetPagedList([FromQuery] MaterialTechnicalValueSearchModel model)
+        {
+            return _logic.ReadPagedList(model);
         }
     }
 }

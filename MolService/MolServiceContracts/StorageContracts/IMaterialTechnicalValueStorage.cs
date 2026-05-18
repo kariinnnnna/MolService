@@ -25,5 +25,6 @@ namespace MolServiceContracts.StorageContracts
         MaterialTechnicalValueViewModel? Delete(MaterialTechnicalValueBindingModel model);
         List<InventoryReportItemViewModel> GetInventoryReportItems();
         List<InventoryReportItemViewModel> GetInventoryReportItemsByClassroomIds(List<int> classroomIds);
+        PagedResultViewModel<MaterialTechnicalValueViewModel> GetPagedList(MaterialTechnicalValueSearchModel model);
     }
 }

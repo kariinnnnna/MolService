@@ -64,6 +64,18 @@ namespace MolServiceDatabaseImplement
                     .WithMany(x => x.MaterialTechnicalValues)
                     .HasForeignKey(x => x.MaterialResponsiblePersonId)
                     .OnDelete(DeleteBehavior.Restrict);
+                entity.Property(x => x.SourceType)
+                    .IsRequired()
+                    .HasConversion<int>()
+                    .HasDefaultValue(MolServiceDataModels.Enums.MaterialTechnicalValueSourceType.FixedAsset);
+
+                entity.Property(x => x.ExternalKey)
+                    .IsRequired()
+                    .HasMaxLength(300)
+                    .HasDefaultValue(string.Empty);
+
+                entity.HasIndex(x => x.SourceType);
+                entity.HasIndex(x => x.ExternalKey);
             });
 
             modelBuilder.Entity<Software>(entity =>

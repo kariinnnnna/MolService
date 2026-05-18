@@ -1,4 +1,5 @@
-﻿using MolServiceDataModels.Models;
+﻿using MolServiceDataModels.Enums;
+using MolServiceDataModels.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -36,6 +37,11 @@ namespace MolServiceContracts.BindingModels
         [StringLength(200, ErrorMessage = "Местоположение не должно превышать 200 символов")]
         [Display(Name = "Местоположение")]
         public string Location { get; set; } = string.Empty;
+        [Display(Name = "Источник")]
+        public MaterialTechnicalValueSourceType SourceType { get; set; } = MaterialTechnicalValueSourceType.FixedAsset;
+
+        [StringLength(300, ErrorMessage = "Внешний ключ не должен превышать 300 символов")]
+        public string ExternalKey { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Материально ответственное лицо обязательно")]
         [Display(Name = "Материально ответственное лицо")]
