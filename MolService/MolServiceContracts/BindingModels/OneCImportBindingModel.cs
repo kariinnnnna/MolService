@@ -10,11 +10,9 @@ namespace MolServiceContracts.BindingModels
 {
     public class OneCImportBindingModel
     {
-        [Required(ErrorMessage = "Логин обязателен")]
         [Display(Name = "Логин")]
         public string Username { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Пароль обязателен")]
         [Display(Name = "Пароль")]
         public string Password { get; set; } = string.Empty;
     }
