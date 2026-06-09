@@ -5,6 +5,7 @@ using MolServiceDatabaseImplement.Implements;
 using MolServiceDatabaseImplement;
 using MolServiceBusinessLogic.Implements;
 using MolServiceBusinessLogic.Helpers;
+using MolServiceRestApi.HostedServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +41,7 @@ builder.Services.AddTransient<IOneCImportLogic, OneCImportLogic>();
 builder.Services.AddHttpClient<CoreApiService>();
 builder.Services.AddTransient<ICoreClassroomImportLogic, CoreClassroomImportLogic>();
 builder.Services.AddScoped<IInventoryReportLogic, InventoryReportLogic>();
+builder.Services.AddHostedService<WeeklyMolSyncHostedService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

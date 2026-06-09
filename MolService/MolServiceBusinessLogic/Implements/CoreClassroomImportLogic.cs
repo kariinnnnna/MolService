@@ -3,11 +3,6 @@ using MolServiceContracts.BindingModels;
 using MolServiceContracts.BusinessLogicContracts;
 using MolServiceContracts.SearchModels;
 using MolServiceContracts.StorageContracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MolServiceBusinessLogic.Implements
 {
@@ -28,12 +23,17 @@ namespace MolServiceBusinessLogic.Implements
         {
             var coreClassrooms = await _coreApiService.GetClassroomsAsync();
 
+            var actualCoreIds = coreClassrooms
+                .Select(x => x.Id)
+                .ToHashSet();
+
             foreach (var coreClassroom in coreClassrooms)
             {
-                var existing = _classroomStorage.GetElement(new ClassroomSearchModel
-                {
-                    CoreSystemId = coreClassroom.Id
-                });
+                var existing = _classroomStorage.GetElement(
+                    new ClassroomSearchModel
+                    {
+                        CoreSystemId = coreClassroom.Id
+                    });
 
                 var model = new ClassroomBindingModel
                 {
@@ -54,6 +54,22 @@ namespace MolServiceBusinessLogic.Implements
                     model.Id = existing.Id;
                     _classroomStorage.Update(model);
                 }
+            }
+
+            var localCoreClassrooms = _classroomStorage.GetFullList()
+                .Where(x => x.CoreSystemId > 0)
+                .ToList();
+
+            var deletedFromCoreClassrooms = localCoreClassrooms
+                .Where(x => !actualCoreIds.Contains(x.CoreSystemId))
+                .ToList();
+
+            foreach (var classroom in deletedFromCoreClassrooms)
+            {
+                _classroomStorage.Delete(new ClassroomBindingModel
+                {
+                    Id = classroom.Id
+                });
             }
         }
     }

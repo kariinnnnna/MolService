@@ -115,13 +115,25 @@ namespace MolServiceDatabaseImplement.Implements
 
         public ClassroomViewModel? Delete(ClassroomBindingModel model)
         {
-            var entity = _context.Classrooms.FirstOrDefault(x => x.Id == model.Id);
+            var entity = _context.Classrooms
+                .FirstOrDefault(x => x.Id == model.Id);
+
             if (entity == null)
             {
                 return null;
             }
 
             var result = CreateModel(entity);
+
+            var linkedMaterialTechnicalValues = _context.MaterialTechnicalValues
+                .Where(x => x.ClassroomId == entity.Id)
+                .ToList();
+
+            foreach (var value in linkedMaterialTechnicalValues)
+            {
+                value.ClassroomId = null;
+            }
+
             _context.Classrooms.Remove(entity);
             _context.SaveChanges();
 
